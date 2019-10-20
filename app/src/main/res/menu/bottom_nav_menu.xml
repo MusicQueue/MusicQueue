@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_queue"
+        android:icon="@drawable/ic_queue_outline"
+        android:title="@string/title_queue" />
+    <item
+        android:id="@+id/navigation_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/title_search" />
+    <item
+        android:id="@+id/navigation_library"
+        android:icon="@drawable/ic_library_outline"
+        android:title="@string/title_library" />
+    <item
+        android:id="@+id/navigation_account"
+        android:icon="@drawable/ic_account_outline"
+        android:title="@string/title_account" />
+
+</menu>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "407769768282",
+    "firebase_url": "https://musicqueue-3d5da.firebaseio.com",
+    "project_id": "musicqueue-3d5da",
+    "storage_bucket": "musicqueue-3d5da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:407769768282:android:fb549faf7cd6d761bcd363",
+        "android_client_info": {
+          "package_name": "com.example.musicqueue"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "407769768282-eea6pitgf4qhr9ci1v7igj53qk8hkbdo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.musicqueue",
+            "certificate_hash": "974dacd92bd44c152e2107973b57b841b6af9742"
+          }
+        },
+        {
+          "client_id": "407769768282-ht5a6s1mu1gs6ivqmcfan7cpqle97stb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ4J8wwf_CyuIJ8YF_dZ6y_anF826EDlk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "407769768282-bebugkg08m19utqdhua65ugfduk35tif.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
