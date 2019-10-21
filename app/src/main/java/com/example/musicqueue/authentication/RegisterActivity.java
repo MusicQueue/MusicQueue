@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.musicqueue.R;
@@ -37,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,9 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         firebaseAuth = FirebaseAuth.getInstance();
+
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.INVISIBLE);
 
         nameText = findViewById(R.id.name_text_input);
         nameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -91,6 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 registerNewUser();
                 hideKeyboard(v);
+                progressBar.setVisibility(View.VISIBLE);
             }
         });
 
@@ -120,20 +126,22 @@ public class RegisterActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressBar.setVisibility(View.INVISIBLE);
+
                         if (task.isSuccessful()) {
                             showToast("Registration successful!");
 
                             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("displayName", firebaseUser.getDisplayName());
-                            data.put("email", email);
-
-                            db.collection("users").document(firebaseUser.getUid())
-                                    .set(data, SetOptions.merge());
 
                             UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name).build();
                             firebaseUser.updateProfile(profile);
+
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("displayName", firebaseUser.getDisplayName());
+                            data.put("email", email);
+                            db.collection("users").document(firebaseUser.getUid())
+                                    .set(data, SetOptions.merge());
 
                             FirebaseAuth.getInstance().signOut();
 
