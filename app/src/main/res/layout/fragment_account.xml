@@ -11,70 +11,60 @@
         android:layout_width="match_parent"
         android:layout_height="304dp">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:layout_scrollInterpolator="@android:anim/decelerate_interpolator"
+            android:gravity="bottom|center_horizontal"
+            android:orientation="vertical">
 
-            app:toolbarId="@+id/toolbar">
+            <ImageView
+                android:id="@+id/account_image"
+                android:layout_width="128sp"
+                android:layout_height="128sp"
+                android:layout_marginBottom="8dp"
+                android:contentDescription="@string/title_account"
+                app:srcCompat="@drawable/ic_account_outline_primary" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/account_name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="bottom|center_horizontal"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/lexend_deca"
+                android:text="@string/name"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimary"
+                android:textSize="28sp" />
 
-                <ImageView
-                    android:id="@+id/account_image"
-                    android:layout_width="128sp"
-                    android:layout_height="128sp"
-                    android:layout_marginBottom="8dp"
-                    android:contentDescription="@string/title_account"
-                    app:srcCompat="@drawable/ic_account_outline_primary" />
+            <TextView
+                android:id="@+id/account_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="22dp"
+                android:fontFamily="@font/lexend_deca"
+                android:textAlignment="center"
+                android:textColor="@color/colorFontDark"
+                android:textSize="16sp"
+                tools:text="@string/email" />
 
-                <TextView
-                    android:id="@+id/account_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="@font/lexend_deca"
-                    android:text="@string/name"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="28sp" />
+            <Button
+                android:id="@+id/sign_out_button"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/lexend_deca"
+                android:text="@string/sign_out"
+                android:textColor="@color/colorPrimary"
+                app:cornerRadius="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/colorPrimary"
+                app:strokeWidth="2dp" />
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/account_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="22dp"
-                    android:fontFamily="@font/lexend_deca"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorFontDark"
-                    android:textSize="16sp"
-                    tools:text="@string/email" />
-
-                <Button
-                    android:id="@+id/sign_out_button"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:fontFamily="@font/lexend_deca"
-                    android:text="@string/sign_out"
-                    android:textColor="@color/colorPrimary"
-                    app:cornerRadius="5dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:strokeColor="@color/colorPrimary"
-                    app:strokeWidth="2dp" />
-            </LinearLayout>
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -89,72 +79,30 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/account_settings_text_view"
+                android:id="@+id/settings_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16sp"
                 android:layout_marginTop="16sp"
                 android:layout_marginRight="16sp"
                 android:layout_marginBottom="10sp"
-                android:text="@string/account_settings"
+                android:text="@string/title_settings"
                 android:textColor="@color/colorAccent" />
 
             <TextView
-                android:id="@+id/update_name_text_view"
+                android:id="@+id/advanced_settings_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16sp"
-                android:paddingTop="12sp"
-                android:paddingRight="16sp"
-                android:paddingBottom="12sp"
-                android:text="@string/update_name"
-                android:textColor="@color/colorFontLight"
-                android:textSize="18sp"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"/>
-
-            <TextView
-                android:id="@+id/update_email_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="16sp"
-                android:paddingTop="12sp"
-                android:paddingRight="16sp"
-                android:paddingBottom="12sp"
-                android:text="@string/update_email"
-                android:textColor="@color/colorFontLight"
-                android:textSize="18sp"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"/>
-
-            <TextView
-                android:id="@+id/reset_password_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="16sp"
-                android:paddingTop="12sp"
-                android:paddingRight="16sp"
-                android:paddingBottom="12sp"
-                android:text="@string/reset_password"
-                android:textColor="@color/colorFontLight"
-                android:textSize="18sp"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true" />
-
-            <TextView
-                android:id="@+id/delete_account_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="16sp"
-                android:paddingTop="12sp"
-                android:paddingRight="16sp"
-                android:paddingBottom="12sp"
                 android:layout_marginBottom="10sp"
-                android:text="@string/delete_account"
-                android:textColor="@color/colorFontLight"
-                android:textSize="18sp"
                 android:background="?attr/selectableItemBackground"
-                android:clickable="true"/>
+                android:clickable="true"
+                android:paddingLeft="16sp"
+                android:paddingTop="12sp"
+                android:paddingRight="16sp"
+                android:paddingBottom="12sp"
+                android:text="@string/advanced_settings"
+                android:textColor="@color/colorFontLight"
+                android:textSize="18sp" />
 
             <View
                 android:id="@+id/divider"

@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".authentication.SignInActivity"
+        <activity android:name=".ui.account.SettingsActivity"></activity>
+        <activity
+            android:name=".authentication.SignInActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,8 +25,7 @@
         </activity>
         <activity
             android:name=".authentication.EmailPasswordActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".authentication.RegisterActivity"
             android:theme="@style/AppTheme.NoActionBar" />
