@@ -25,6 +25,8 @@
     <string name="back_to_sign_in">Back to sign in</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="send_reset_password_email">Send Reset Password Email</string>
+    <string name="email_password">Email/Password</string>
+    <string name="google_sign_in">Sign In With Google</string>
 
     <!-- Queue Fragment -->
 
@@ -43,5 +45,7 @@
     <string name="delete_account">Delete Account</string>
     <string name="linked_account">Linked Accounts</string>
     <string name="spotify">Spotify</string>
+    <string name="title_update_display_name">Update Display Name</string>
+    <string name="update_display_name">Update Name</string>
 
 </resources>

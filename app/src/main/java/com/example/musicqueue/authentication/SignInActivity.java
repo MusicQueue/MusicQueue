@@ -3,41 +3,34 @@ package com.example.musicqueue.authentication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignInActivity extends AppCompatActivity {
 
-    private TextInputEditText emailText, passwordText;
-    private TextView forgotPasswordTV;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final int RC_SIGN_IN = 9001;
+    private static final String TAG = "SignInActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,161 +38,86 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         firebaseAuth = FirebaseAuth.getInstance();
+
+        /* Go to Main Activity if user is signed in */
         if (firebaseAuth.getCurrentUser() != null) {
             startActivity(new Intent(SignInActivity.this, MainActivity.class));
             finish();
         }
 
-        emailText = findViewById(R.id.email_text_input);
-        passwordText = findViewById(R.id.password_text_input);
+        /* Initialize Google Sign In Options */
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    emailText.clearFocus();
-                }
-            }
-        });
-
-        passwordText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    emailText.clearFocus();
-                }
-            }
-        });
-
-
-        Button signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        Button emailPasswordButton = findViewById(R.id.email_password_button);
+        emailPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginUserAccount();
-                hideKeyboard(v);
+                startActivity(new Intent(SignInActivity.this, EmailPasswordActivity.class));
+                finish();
             }
         });
 
-        Button registerButton = findViewById(R.id.register_button);
-        registerButton.setOnClickListener(new View.OnClickListener() {
+        LinearLayout googleSignInButon = findViewById(R.id.google_sign_in);
+        googleSignInButon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignInActivity.this, RegisterActivity.class));
-            }
-        });
-
-        forgotPasswordTV = findViewById(R.id.forgot_password_text_view);
-        forgotPasswordTV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                forgotPassword();
+                googleSignIn();
             }
         });
     }
 
-    private void loginUserAccount() {
+    private void googleSignIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
 
-        String email, password;
-        email = emailText.getText().toString();
-        password = passwordText.getText().toString();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if (!validateForm()) {
-            return;
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+            }
         }
+    }
 
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             showToast("Login successful!");
-                            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                            startActivity(intent);
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            startActivity(new Intent(SignInActivity.this, MainActivity.class));
                             finish();
                         }
                         else {
-                            showToast("Login failed! Incorrect username or password.");
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            showToast("Login failed.");
                         }
                     }
                 });
     }
 
-    private void forgotPassword() {
-        startActivity(new Intent(SignInActivity.this, ForgotPasswordActivity.class));
-    }
-
-    private boolean validateForm() {
-        boolean valid = true;
-
-        TextInputLayout emailTIL = findViewById(R.id.email_text_layout);
-        TextInputLayout passwordTIL = findViewById(R.id.password_text_layout);
-
-        String email, password;
-        email = emailText.getText().toString();
-        password = passwordText.getText().toString();
-
-        if (TextUtils.isEmpty(email)) {
-            emailTIL.setError("Required");
-            valid = false;
-        }
-        else if (!isValidEmail(email)) {
-            emailTIL.setError("Please enter a valid email");
-            valid = false;
-        }
-        else {
-            emailTIL.setError(null);
-        }
-
-        if (TextUtils.isEmpty(password)) {
-            passwordTIL.setError("Required");
-            valid = false;
-        }
-        else if (password.length() < 8) {
-            passwordTIL.setError("Password invalid, must be more than 8 characters");
-            valid = false;
-        }
-        else {
-            passwordTIL.setError(null);
-        }
-
-        return valid;
-    }
-
-    public final boolean isValidEmail(CharSequence target) {
-        if (target == null) {
-            return false;
-        }
-
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
-    public void hideKeyboard(View view) {
-        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
     public void showToast(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if (v instanceof TextInputEditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
-                    Log.d("focus", "touchevent");
-                    v.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event);
     }
 }
