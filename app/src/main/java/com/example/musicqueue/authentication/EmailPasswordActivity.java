@@ -24,16 +24,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EmailPasswordActivity extends AppCompatActivity {
 
     private TextInputEditText emailText, passwordText;
-    private TextView forgotPasswordTV;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +77,11 @@ public class EmailPasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(EmailPasswordActivity.this, RegisterActivity.class));
+                finish();
             }
         });
 
-        forgotPasswordTV = findViewById(R.id.forgot_password_text_view);
+        TextView forgotPasswordTV = findViewById(R.id.forgot_password_text_view);
         forgotPasswordTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,6 +176,7 @@ public class EmailPasswordActivity extends AppCompatActivity {
     public void showToast(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
+
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {

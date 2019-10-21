@@ -23,13 +23,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignInActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "SignInActivity";
@@ -59,6 +57,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SignInActivity.this, EmailPasswordActivity.class));
+                finish();
             }
         });
 

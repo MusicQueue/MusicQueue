@@ -123,7 +123,6 @@ public class AccountFragment extends Fragment {
 
         // Google sign out
         mGoogleSignInClient.signOut();
-        //Auth.GoogleSignInApi.signOut()
 
         startActivity(new Intent(getActivity(), SignInActivity.class));
         getActivity().finish();
