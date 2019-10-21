@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.musicqueue.MainActivity;
@@ -23,19 +24,31 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignInActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "SignInActivity";
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -66,6 +79,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 googleSignIn();
+                progressBar.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -101,10 +115,21 @@ public class SignInActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressBar.setVisibility(View.INVISIBLE);
                         if (task.isSuccessful()) {
                             showToast("Login successful!");
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
+
+                            // Log data into users collection
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("displayName", firebaseUser.getDisplayName());
+                            data.put("email", firebaseUser.getEmail());
+                            db.collection("users").document(firebaseUser.getUid())
+                                    .set(data, SetOptions.merge());
+
                             startActivity(new Intent(SignInActivity.this, MainActivity.class));
                             finish();
                         }
