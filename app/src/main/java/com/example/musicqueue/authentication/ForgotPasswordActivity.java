@@ -77,7 +77,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         showToast("Password reset email sent!");
                         Log.d(TAG, "Email sent.");
-                        startActivity(new Intent(ForgotPasswordActivity.this, SignInActivity.class));
+                        startActivity(new Intent(ForgotPasswordActivity.this, EmailPasswordActivity.class));
                         finish();
                     }
                     else {

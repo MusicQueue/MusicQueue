@@ -2,7 +2,6 @@ package com.example.musicqueue.authentication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,8 +13,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,16 +25,12 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
-import java.util.HashMap;
-import java.util.Map;
+public class EmailPasswordActivity extends AppCompatActivity {
 
-public class RegisterActivity extends AppCompatActivity {
-
-    private TextInputEditText nameText, emailText, passwordText, confirmPasswordText;
+    private TextInputEditText emailText, passwordText;
+    private TextView forgotPasswordTV;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -41,21 +38,17 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_email_password);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
-        nameText = findViewById(R.id.name_text_input);
-        nameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    nameText.clearFocus();
-                }
-            }
-        });
+        if (firebaseAuth.getCurrentUser() != null) {
+            startActivity(new Intent(EmailPasswordActivity.this, MainActivity.class));
+            finish();
+        }
 
         emailText = findViewById(R.id.email_text_input);
+        passwordText = findViewById(R.id.password_text_input);
+
         emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -65,23 +58,22 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        passwordText = findViewById(R.id.password_text_input);
         passwordText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    passwordText.clearFocus();
+                    emailText.clearFocus();
                 }
             }
         });
 
-        confirmPasswordText = findViewById(R.id.password_confirm_text_input);
-        confirmPasswordText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+        Button signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    confirmPasswordText.clearFocus();
-                }
+            public void onClick(View v) {
+                loginUserAccount();
+                hideKeyboard(v);
             }
         });
 
@@ -89,25 +81,22 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                registerNewUser();
-                hideKeyboard(v);
+                startActivity(new Intent(EmailPasswordActivity.this, RegisterActivity.class));
             }
         });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        forgotPasswordTV = findViewById(R.id.forgot_password_text_view);
+        forgotPasswordTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                forgotPassword();
             }
         });
-
     }
 
-    private void registerNewUser() {
+    private void loginUserAccount() {
 
-        final String name, email, password;
-        name = nameText.getText().toString();
+        String email, password;
         email = emailText.getText().toString();
         password = passwordText.getText().toString();
 
@@ -115,59 +104,36 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
+        firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            showToast("Registration successful!");
-
-                            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("displayName", firebaseUser.getDisplayName());
-                            data.put("email", email);
-
-                            db.collection("users").document(firebaseUser.getUid())
-                                    .set(data, SetOptions.merge());
-
-                            UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(name).build();
-                            firebaseUser.updateProfile(profile);
-
-                            FirebaseAuth.getInstance().signOut();
-
-                            Intent intent = new Intent(RegisterActivity.this, EmailPasswordActivity.class);
+                            showToast("Login successful!");
+                            Intent intent = new Intent(EmailPasswordActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                         }
                         else {
-                            showToast("Registration failed!");
+                            showToast("Login failed! Incorrect username or password.");
                         }
                     }
                 });
     }
 
+    private void forgotPassword() {
+        startActivity(new Intent(EmailPasswordActivity.this, ForgotPasswordActivity.class));
+    }
+
     private boolean validateForm() {
         boolean valid = true;
 
-        TextInputLayout nameTIL = findViewById(R.id.name_text_layout);
         TextInputLayout emailTIL = findViewById(R.id.email_text_layout);
         TextInputLayout passwordTIL = findViewById(R.id.password_text_layout);
-        TextInputLayout confirmPasswordTIL = findViewById(R.id.password_confirm_text_layout);
 
-        String displayName, email, password, passwordConfirm;
-        displayName = nameText.getText().toString();
+        String email, password;
         email = emailText.getText().toString();
         password = passwordText.getText().toString();
-        passwordConfirm = confirmPasswordText.getText().toString();
-
-        if (TextUtils.isEmpty(displayName)) {
-            nameTIL.setError("Required");
-            valid = false;
-        }
-        else {
-            nameTIL.setError(null);
-        }
 
         if (TextUtils.isEmpty(email)) {
             emailTIL.setError("Required");
@@ -186,27 +152,11 @@ public class RegisterActivity extends AppCompatActivity {
             valid = false;
         }
         else if (password.length() < 8) {
-            passwordTIL.setError("Must be at least 8 characetrs in length");
-        }
-        else {
-            passwordTIL.setError(null);
-        }
-
-        if (TextUtils.isEmpty(passwordConfirm)) {
-            confirmPasswordTIL.setError("Required");
-            valid = false;
-        }
-        else {
-            confirmPasswordTIL.setError(null);
-        }
-
-        if (!passwordConfirm.equals(password)) {
-            confirmPasswordTIL.setError("Passwords do not match");
+            passwordTIL.setError("Password invalid, must be more than 8 characters");
             valid = false;
         }
         else {
             passwordTIL.setError(null);
-            confirmPasswordTIL.setError(null);
         }
 
         return valid;
@@ -220,15 +170,15 @@ public class RegisterActivity extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
-    public void showToast(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-    }
-
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public void showToast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -39,4 +39,11 @@
         <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.AlertDialogTheme" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorFontLight</item>
+        <item name="dialogCornerRadius">8sp</item>
+    </style>
+
 </resources>
