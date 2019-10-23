@@ -9,6 +9,7 @@
         <item name="colorError">@color/colorError</item>
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="android:fontFamily">@font/lexend_deca</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
