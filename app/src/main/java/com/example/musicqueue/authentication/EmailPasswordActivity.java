@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,15 +29,11 @@ public class EmailPasswordActivity extends AppCompatActivity {
 
     private TextInputEditText emailText, passwordText;
     private FirebaseAuth firebaseAuth;
-    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_password);
-
-        progressBar = findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.INVISIBLE);
 
         firebaseAuth = FirebaseAuth.getInstance();
         if (firebaseAuth.getCurrentUser() != null) {
@@ -74,7 +69,6 @@ public class EmailPasswordActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loginUserAccount();
                 hideKeyboard(v);
-                progressBar.setVisibility(View.VISIBLE);
             }
         });
 
@@ -110,7 +104,6 @@ public class EmailPasswordActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBar.setVisibility(View.INVISIBLE);
                         if (task.isSuccessful()) {
                             showToast("Login successful!");
                             Intent intent = new Intent(EmailPasswordActivity.this, MainActivity.class);
