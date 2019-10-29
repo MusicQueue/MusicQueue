@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.musicqueue.MainActivity;
@@ -40,18 +39,12 @@ public class AccountFragment extends Fragment {
 
         setColors();
 
-        setAccountNameAndEmail();
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
+        setAccount();
 
         root.findViewById(R.id.sign_out_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            signOut();
+                signOut();
             }
         });
 
@@ -70,6 +63,11 @@ public class AccountFragment extends Fragment {
         firebaseAuth.signOut();
 
         // Google sign out
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
         mGoogleSignInClient.signOut();
 
         startActivity(new Intent(getActivity(), SignInActivity.class));
@@ -90,7 +88,7 @@ public class AccountFragment extends Fragment {
         }
     }
 
-    private void setAccountNameAndEmail() {
+    private void setAccount() {
         TextView nameTV = root.findViewById(R.id.account_name);
         nameTV.setText(firebaseUser.getDisplayName().toString());
 
@@ -101,7 +99,7 @@ public class AccountFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        setAccountNameAndEmail();
+        setAccount();
     }
 
 }

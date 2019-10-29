@@ -1,5 +1,6 @@
 package com.example.musicqueue.ui.account;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -17,12 +19,18 @@ import com.example.musicqueue.authentication.SignInActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -55,6 +63,22 @@ public class SettingsActivity extends AppCompatActivity {
                 deleteAccountDialog();
             }
         });
+
+        TextView updateEmailTV = findViewById(R.id.update_email_text_view);
+        updateEmailTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateEmailDialog();
+            }
+        });
+
+        TextView resetPasswordTV = findViewById(R.id.reset_password_text_view);
+        resetPasswordTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetPasswordDialog();
+            }
+        });
     }
 
     /**
@@ -78,6 +102,12 @@ public class SettingsActivity extends AppCompatActivity {
                 emailTV.setVisibility(TextView.INVISIBLE);
                 TextView passwordTV = findViewById(R.id.reset_password_text_view);
                 passwordTV.setVisibility(TextView.INVISIBLE);
+            }
+            if (user.getProviderId().equals("password")) {
+                TextView emailTV = findViewById(R.id.update_email_text_view);
+                emailTV.setVisibility(TextView.VISIBLE);
+                TextView passwordTV = findViewById(R.id.reset_password_text_view);
+                passwordTV.setVisibility(TextView.VISIBLE);
             }
         }
     }
@@ -143,6 +173,116 @@ public class SettingsActivity extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+    private void updateEmailDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AppTheme_AlertDialogTheme);
+        builder.setTitle(R.string.title_update_email);
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_update_email, null);
+        builder.setView(v);
+
+        builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                TextInputEditText emailText = v.findViewById(R.id.email_text_input);
+                String email = emailText.getText().toString();
+
+                if (TextUtils.isEmpty(email)) {
+                    showToast("Must enter a email");
+                }
+                else {
+                    updateEmailFirebase(email);
+                    showToast("Email updated!");
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void updateEmailFirebase(String email) {
+        final String TAG = "UpdateEmailDialog";
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user.updateEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            Map<String, Object> data = new HashMap<>();
+                            data.put("email", firebaseUser.getEmail());
+                            db.collection("users").document(firebaseUser.getUid())
+                                    .set(data, SetOptions.merge());
+                            Log.d(TAG, "User email address updated.");
+                        }
+                    }
+                });
+    }
+
+    private void resetPasswordDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AppTheme_AlertDialogTheme);
+        builder.setTitle(R.string.title_reset_password);
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_reset_password, null);
+        builder.setView(v);
+
+        builder.setPositiveButton("Reset", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                TextInputEditText passwordText = v.findViewById(R.id.password_text_input);
+                String password = passwordText.getText().toString();
+
+                TextInputEditText passwordConfirmText = v.findViewById(R.id.password_confirm_text_input);
+                String passwordConfirm = passwordConfirmText.getText().toString();
+
+                if (TextUtils.isEmpty(password)) {
+                    showToast("Must enter a password");
+                }
+                else if (password.length() < 8) {
+                    showToast("Password must be longer than 8 characters");
+                }
+                else if (TextUtils.isEmpty(passwordConfirm)) {
+                    showToast("Must confirm password");
+                }
+                else if (!password.equals(passwordConfirm)) {
+                    showToast("Passwords must match");
+                }
+                else {
+                    resetPasswordFirebase(password);
+                    showToast("Password updated!");
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void resetPasswordFirebase(String password) {
+        final String TAG = "resetPasswordDialog";
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user.updatePassword(password)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User password updated.");
+                        }
+                    }
+                });
     }
 
     private void deleteAccount() {

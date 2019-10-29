@@ -42,7 +42,6 @@
     <string name="spotify">Spotify</string>
 
     <!-- Settings Activity -->
-    <string name="advanced_settings">Advanced Settings</string>
     <string name="application_settings">Application Settings</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="notifications">Notifications</string>
@@ -56,5 +55,7 @@
         Are you shure you want to delete your account?
         Doing so will result in deletion of all account data, which cannot be restored.
     </string>
+    <string name="title_update_email">Update Email Address</string>
+    <string name="title_reset_password">Reset Password</string>
 
 </resources>

@@ -79,40 +79,6 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/settings_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16sp"
-                android:layout_marginTop="16sp"
-                android:layout_marginRight="16sp"
-                android:layout_marginBottom="10sp"
-                android:text="@string/title_settings"
-                android:textColor="@color/colorAccent" />
-
-            <TextView
-                android:id="@+id/advanced_settings_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10sp"
-                android:background="?attr/selectableItemBackground"
-                android:clickable="true"
-                android:paddingLeft="16sp"
-                android:paddingTop="12sp"
-                android:paddingRight="16sp"
-                android:paddingBottom="12sp"
-                android:text="@string/advanced_settings"
-                android:textColor="@color/colorFontLight"
-                android:textSize="18sp" />
-
-            <View
-                android:id="@+id/divider"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginLeft="16sp"
-                android:layout_marginRight="16sp"
-                android:background="@color/colorInactive" />
-
-            <TextView
                 android:id="@+id/linked_accounts_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,6 +102,70 @@
                 android:textSize="18sp"
                 android:background="?attr/selectableItemBackground"
                 android:clickable="true"/>
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginLeft="16sp"
+                android:layout_marginRight="16sp"
+                android:background="@color/colorInactive" />
+
+            <TextView
+                android:id="@+id/settings_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16sp"
+                android:layout_marginTop="16sp"
+                android:layout_marginRight="16sp"
+                android:layout_marginBottom="10sp"
+                android:text="@string/title_settings"
+                android:textColor="@color/colorAccent" />
+
+            <Switch
+                android:id="@+id/dark_theme_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10sp"
+                android:checked="true"
+                android:clickable="true"
+                android:paddingLeft="16sp"
+                android:paddingTop="12sp"
+                android:paddingRight="16sp"
+                android:paddingBottom="12sp"
+                android:text="@string/dark_theme"
+                android:textColor="@color/colorFontLight"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/notifications_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10sp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingLeft="16sp"
+                android:paddingTop="12sp"
+                android:paddingRight="16sp"
+                android:paddingBottom="12sp"
+                android:text="@string/notifications"
+                android:textColor="@color/colorFontLight"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/advanced_settings_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10sp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingLeft="16sp"
+                android:paddingTop="12sp"
+                android:paddingRight="16sp"
+                android:paddingBottom="12sp"
+                android:text="@string/account_settings"
+                android:textColor="@color/colorFontLight"
+                android:textSize="18sp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
