@@ -122,7 +122,7 @@
                 android:text="@string/title_settings"
                 android:textColor="@color/colorAccent" />
 
-            <Switch
+            <!--<Switch
                 android:id="@+id/dark_theme_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
                 android:paddingBottom="12sp"
                 android:text="@string/dark_theme"
                 android:textColor="@color/colorFontLight"
-                android:textSize="18sp" />
+                android:textSize="18sp" />-->
 
             <TextView
                 android:id="@+id/notifications_text_view"
