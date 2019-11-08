@@ -1,4 +1,4 @@
-package com.example.musicqueue.ui.queue;
+package com.example.musicqueue.models;
 
 
 import com.google.firebase.Timestamp;
