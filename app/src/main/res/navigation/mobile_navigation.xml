@@ -27,4 +27,10 @@
         android:name="com.example.musicqueue.ui.account.AccountFragment"
         android:label="@string/title_account"
         tools:layout="@layout/fragment_account" />
+
+    <fragment
+        android:id="@+id/navigation_song"
+        android:name="com.example.musicqueue.ui.song.SongFragment"
+        android:label="@string/title_song"
+        tools:layout="@layout/fragment_song" />
 </navigation>

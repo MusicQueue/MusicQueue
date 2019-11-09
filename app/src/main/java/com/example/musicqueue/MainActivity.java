@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_queue, R.id.navigation_search, R.id.navigation_library, R.id.navigation_account)
+                R.id.navigation_queue, R.id.navigation_search, R.id.navigation_library, R.id.navigation_account,
+                R.id.navigation_song)
                 .build();
         getSupportActionBar().setElevation(0);  // remove actionbar shadow
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

@@ -17,5 +17,9 @@
         android:id="@+id/navigation_account"
         android:icon="@drawable/ic_account_outline"
         android:title="@string/title_account" />
+    <item
+        android:id="@+id/navigation_song"
+        android:icon="@drawable/ic_song_outline_foreground"
+        android:title="@string/title_song" />
 
 </menu>
