@@ -186,7 +186,7 @@ public class RegisterActivity extends AppCompatActivity {
             passwordTIL.setError("Required");
             valid = false;
         }
-        else if (password.length() < 8) {
+        else if (password.length() <= 8) {
             passwordTIL.setError("Must be at least 8 characetrs in length");
         }
         else {
