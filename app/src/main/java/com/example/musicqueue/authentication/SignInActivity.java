@@ -77,6 +77,9 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * googleSignIn initiates the authentication process
+     */
     private void googleSignIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -100,6 +103,13 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * firebaseAuthWithGoogle authenticates the user Google account with
+     * Firebase, signs the user in or creates the user's account, and then
+     * adds the user data to the database
+     *
+     * @param acct  Google account used to sign in
+     */
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
@@ -110,10 +120,10 @@ public class SignInActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             showToast("Login successful!");
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign in success, navigation to Main Activity
                             Log.d(TAG, "signInWithCredential:success");
 
-                            // Log data into users collection
+                            // Add data to users collection
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                             Map<String, Object> data = new HashMap<>();
