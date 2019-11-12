@@ -42,10 +42,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        /* Initialize action bar */
         initActionbar();
 
-        /* Hide email update and password reset options if signed in via Google */
         hideEmailPassword();
 
         TextView updateDisplayNameTV = findViewById(R.id.update_diaplay_name_text_view);
@@ -82,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * Initializes the action bar with settings title and button back to
+     * initActionbar initializes the action bar with settings title and button back to
      * Account fragment
      */
     private void initActionbar() {
@@ -92,8 +90,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * Hides email update and password reset options if the user is signed in via
-     * Google sign in (email and passwords are not used for authentication)
+     * hideEmailPassword ides email update and password reset options if the
+     * user is signed in via Google sign in (email and passwords are not used
+     * for Google account authentication)
      */
     private void hideEmailPassword() {
         for (UserInfo user: FirebaseAuth.getInstance().getCurrentUser().getProviderData()) {
@@ -112,6 +111,10 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * updateDisplayNameDialog creates and opens a dialog for the user to
+     * update their display name
+     */
     private void updateDisplayNameDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AppTheme_AlertDialogTheme);
         builder.setTitle(R.string.title_update_display_name);
@@ -144,6 +147,12 @@ public class SettingsActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * updateDisplayName takes a new string value and updates the user's
+     * display name in Firebase to that value
+     *
+     * @param name new display name
+     */
     private void updateDisplayNameFirebase(String name) {
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name)
@@ -151,6 +160,10 @@ public class SettingsActivity extends AppCompatActivity {
         firebaseUser.updateProfile(profileUpdates);
     }
 
+    /**
+     * deleteAccountDialog creates and opens a dialog with the option for the
+     * user to delete their account
+     */
     private void deleteAccountDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AppTheme_AlertDialogTheme);
         builder.setTitle(R.string.delete_account);
@@ -175,6 +188,37 @@ public class SettingsActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * deleteAccount deletes the user's account from Firebase and from the database
+     */
+    private void deleteAccount() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(firebaseUser.getUid()).delete();
+
+        // sign the user out of Firebase
+        firebaseAuth.signOut();
+
+        // sign the user out of their Google account
+        GoogleSignInClient mGoogleSignInClient;
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(SettingsActivity.this, gso);
+        mGoogleSignInClient.signOut();
+
+        // delete the user from Firebase
+        firebaseUser.delete();
+
+        // navigate the user back to the SignIn Activity
+        startActivity(new Intent(SettingsActivity.this, SignInActivity.class));
+        finish();
+    }
+
+    /**
+     * updateEmailDialog creates and opens a dialog to allow the user to update
+     * the email address for their account and authentication
+     */
     private void updateEmailDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AppTheme_AlertDialogTheme);
         builder.setTitle(R.string.title_update_email);
@@ -207,6 +251,12 @@ public class SettingsActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * updateEmailFirebase updates the user's email in Firebase authentication
+     * and in the database
+     *
+     * @param email new email
+     */
     private void updateEmailFirebase(String email) {
         final String TAG = "UpdateEmailDialog";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -226,6 +276,10 @@ public class SettingsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * resetPasswordDialog creates and opens a dialog allowing the user to reset
+     * their password
+     */
     private void resetPasswordDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this, R.style.AppTheme_AlertDialogTheme);
         builder.setTitle(R.string.title_reset_password);
@@ -270,6 +324,12 @@ public class SettingsActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * resetPasswordFirebase updates the user's password in Firebase authentication
+     * using the new given password
+     *
+     * @param password new password
+     */
     private void resetPasswordFirebase(String password) {
         final String TAG = "resetPasswordDialog";
 
@@ -283,25 +343,6 @@ public class SettingsActivity extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    private void deleteAccount() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(firebaseUser.getUid()).delete();
-
-        GoogleSignInClient mGoogleSignInClient;
-        firebaseAuth.signOut();
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(SettingsActivity.this, gso);
-        mGoogleSignInClient.signOut();
-        firebaseUser.delete();
-
-        startActivity(new Intent(SettingsActivity.this, SignInActivity.class));
-        finish();
     }
 
     public void showToast(String msg) {
