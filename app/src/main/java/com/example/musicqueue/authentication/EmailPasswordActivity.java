@@ -36,6 +36,8 @@ public class EmailPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_email_password);
 
         firebaseAuth = FirebaseAuth.getInstance();
+
+        // if the user is already signed in, navigate to Main Activity
         if (firebaseAuth.getCurrentUser() != null) {
             startActivity(new Intent(EmailPasswordActivity.this, MainActivity.class));
             finish();
@@ -90,16 +92,21 @@ public class EmailPasswordActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * loginUserAccount authenticates the user's credentials with Firebase
+     */
     private void loginUserAccount() {
 
         String email, password;
         email = emailText.getText().toString();
         password = passwordText.getText().toString();
 
+        // validate user input
         if (!validateForm()) {
             return;
         }
 
+        // authenticate with Firebase
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -117,10 +124,19 @@ public class EmailPasswordActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * forgotPassword starts the ForgotPassword Activity
+     */
     private void forgotPassword() {
         startActivity(new Intent(EmailPasswordActivity.this, ForgotPasswordActivity.class));
     }
 
+    /**
+     * validateForm determines wheter or not user input is valid for
+     * authentication
+     *
+     * @return boolean
+     */
     private boolean validateForm() {
         boolean valid = true;
 
@@ -131,10 +147,12 @@ public class EmailPasswordActivity extends AppCompatActivity {
         email = emailText.getText().toString();
         password = passwordText.getText().toString();
 
+        // email field is required
         if (TextUtils.isEmpty(email)) {
             emailTIL.setError("Required");
             valid = false;
         }
+        // checks validation of the email
         else if (!isValidEmail(email)) {
             emailTIL.setError("Please enter a valid email");
             valid = false;
@@ -143,12 +161,14 @@ public class EmailPasswordActivity extends AppCompatActivity {
             emailTIL.setError(null);
         }
 
+        // password is required
         if (TextUtils.isEmpty(password)) {
             passwordTIL.setError("Required");
             valid = false;
         }
-        else if (password.length() < 8) {
-            passwordTIL.setError("Password invalid, must be more than 8 characters");
+        // user password needs to be at least 8 characters in length
+        else if (password.length() <= 8) {
+            passwordTIL.setError("Password invalid, must be at least 8 characters");
             valid = false;
         }
         else {
@@ -158,6 +178,13 @@ public class EmailPasswordActivity extends AppCompatActivity {
         return valid;
     }
 
+    /**
+     * isValidEmail determines whether or not the given email is a valid one
+     * (i.e. has characters before @ symbol, has @ symbol, has a domain)
+     *
+     * @param target given email to be validated
+     * @return  boolean
+     */
     public final boolean isValidEmail(CharSequence target) {
         if (target == null) {
             return false;
@@ -166,6 +193,11 @@ public class EmailPasswordActivity extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
+    /**
+     * hideKeyboard hides the keyboard; it is called on button presses
+     *
+     * @param view the activity view
+     */
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -177,7 +209,13 @@ public class EmailPasswordActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
-
+    /**
+     * dispatchTouchEvent is used to remove focus from text fields when touch is
+     * triggered outside the text field
+     *
+     * @param event touch event
+     * @return boolean
+     */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

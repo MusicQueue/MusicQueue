@@ -105,6 +105,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * registerNewUser gets the user's information from the form,
+     * checks that it is valid, and then creates a new user using
+     * Firebase authentication. When finished, it brings the user
+     * to the EmailPassword Activity to sign in to the app.
+     */
     private void registerNewUser() {
 
         final String name, email, password;
@@ -112,10 +118,12 @@ public class RegisterActivity extends AppCompatActivity {
         email = emailText.getText().toString();
         password = passwordText.getText().toString();
 
+        // validates the information in the form
         if (!validateForm()) {
             return;
         }
 
+        // creates a new user in Firbase
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -125,10 +133,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+                            // create a user profile and update it with the given information
                             UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name).build();
                             firebaseUser.updateProfile(profile);
 
+                            // add the user's display name and email to the database
                             Map<String, Object> data = new HashMap<>();
                             data.put("displayName", firebaseUser.getDisplayName());
                             data.put("email", email);
@@ -137,6 +147,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                             FirebaseAuth.getInstance().signOut();
 
+                            // navigate the user back to the email/password sign in
                             Intent intent = new Intent(RegisterActivity.this, EmailPasswordActivity.class);
                             startActivity(intent);
                             finish();
@@ -148,6 +159,12 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * validateForm determines wheter or not user input is valid for
+     * account creation
+     *
+     * @return boolean
+     */
     private boolean validateForm() {
         boolean valid = true;
 
@@ -162,6 +179,7 @@ public class RegisterActivity extends AppCompatActivity {
         password = passwordText.getText().toString();
         passwordConfirm = confirmPasswordText.getText().toString();
 
+        // display name is required
         if (TextUtils.isEmpty(displayName)) {
             nameTIL.setError("Required");
             valid = false;
@@ -170,10 +188,12 @@ public class RegisterActivity extends AppCompatActivity {
             nameTIL.setError(null);
         }
 
+        // email is required
         if (TextUtils.isEmpty(email)) {
             emailTIL.setError("Required");
             valid = false;
         }
+        // checks for valid email
         else if (!isValidEmail(email)) {
             emailTIL.setError("Please enter a valid email");
             valid = false;
@@ -182,17 +202,20 @@ public class RegisterActivity extends AppCompatActivity {
             emailTIL.setError(null);
         }
 
+        // password is required
         if (TextUtils.isEmpty(password)) {
             passwordTIL.setError("Required");
             valid = false;
         }
-        else if (password.length() < 8) {
+        // checks password length
+        else if (password.length() <= 8) {
             passwordTIL.setError("Must be at least 8 characetrs in length");
         }
         else {
             passwordTIL.setError(null);
         }
 
+        // password confirmation is required
         if (TextUtils.isEmpty(passwordConfirm)) {
             confirmPasswordTIL.setError("Required");
             valid = false;
@@ -201,6 +224,7 @@ public class RegisterActivity extends AppCompatActivity {
             confirmPasswordTIL.setError(null);
         }
 
+        // both passwords must match
         if (!passwordConfirm.equals(password)) {
             confirmPasswordTIL.setError("Passwords do not match");
             valid = false;
@@ -213,6 +237,13 @@ public class RegisterActivity extends AppCompatActivity {
         return valid;
     }
 
+    /**
+     * isValidEmail determines whether or not the given email is a valid one
+     * (i.e. has characters before @ symbol, has @ symbol, has a domain)
+     *
+     * @param target given email to be validated
+     * @return  boolean
+     */
     public final boolean isValidEmail(CharSequence target) {
         if (target == null) {
             return false;
@@ -225,6 +256,11 @@ public class RegisterActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * hideKeyboard hides the keyboard; it is called on reset password button press
+     *
+     * @param view the activity view
+     */
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -232,6 +268,13 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * dispatchTouchEvent is used to remove focus from text fields when touch is
+     * triggered outside the text field
+     *
+     * @param event touch event
+     * @return boolean
+     */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

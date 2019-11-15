@@ -30,7 +30,6 @@ public class AccountFragment extends Fragment {
 
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-    private GoogleSignInClient mGoogleSignInClient;
     private View root;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,6 +57,10 @@ public class AccountFragment extends Fragment {
         return root;
     }
 
+    /**
+     * signOut signs the user's account out using Firebase and using
+     * Google account sign out; called when user presses sign out button
+     */
     private void signOut() {
         // Firebase sign out
         firebaseAuth.signOut();
@@ -67,13 +70,18 @@ public class AccountFragment extends Fragment {
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
         mGoogleSignInClient.signOut();
 
+        // navigate back to SignIn Activity
         startActivity(new Intent(getActivity(), SignInActivity.class));
         getActivity().finish();
     }
 
+    /**
+     * setColors sets the colors for the action bar, status bar, status bar icons,
+     * and the toolbar
+     */
     private void setColors() {
         String ACCENT_COLOR = "#64B5F6";
         ((AppCompatActivity) getActivity()).getSupportActionBar()
@@ -88,6 +96,9 @@ public class AccountFragment extends Fragment {
         }
     }
 
+    /**
+     * setAccount sets the user's display name and email in the Account layout
+     */
     private void setAccount() {
         TextView nameTV = root.findViewById(R.id.account_name);
         nameTV.setText(firebaseUser.getDisplayName().toString());
