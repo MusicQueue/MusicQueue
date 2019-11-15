@@ -43,20 +43,20 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         setName(queue.getName());
         setLocation(queue.getLocation());
         setSongSize(queue.getSongCount());
-        setFavorite(true);
+        setFavorite(false);
     }
 
-    private void setDocId(@Nonnull String docId) { this.docid = docId;}
+    public void setDocId(@Nonnull String docId) { this.docid = docId;}
 
-    private void setName(@Nonnull String name) {this.queueNameTV.setText(name);}
+    public void setName(@Nonnull String name) {this.queueNameTV.setText(name);}
 
-    private void setLocation(@Nonnull String loc) {this.queueLocationTV.setText(loc);}
+    public void setLocation(@Nonnull String loc) {this.queueLocationTV.setText(loc);}
 
-    private void setSongSize(@Nonnull Integer songCount) {
+    public void setSongSize(@Nonnull Integer songCount) {
         this.songSizeTV.setText(songCount.toString());
     }
 
-    private void setFavorite(@Nonnull boolean fave) {
+    public void setFavorite(@Nonnull boolean fave) {
         favoriteChip.setChecked(fave);
         favoriteChip.setOnClickListener(new View.OnClickListener() {
             @Override

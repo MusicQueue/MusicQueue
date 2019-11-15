@@ -14,12 +14,12 @@ public class Queue {
 
 
 
-    public Queue(String name, String location, String docId, Timestamp created) {
+    public Queue(String name, String location, String docId, Timestamp created, Integer songCount) {
         this.name = name;
         this.location = location;
         this.docId = docId;
         this.created = created;
-        this.songCount = 0;
+        this.songCount = songCount;
     }
 
     public Timestamp getCreated() {
