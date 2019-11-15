@@ -5,13 +5,13 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class QueueModel {
+public class Queue {
     private String name;
     private String location;
     private String docId;
     private Timestamp created;
 
-    public QueueModel(String name, String location, String docId, Timestamp created) {
+    public Queue(String name, String location, String docId, Timestamp created) {
         this.name = name;
         this.location = location;
         this.docId = docId;
