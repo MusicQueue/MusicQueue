@@ -64,12 +64,18 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * sendPasswordResetEmail sends a password reset link in an email
+     * to the given email
+     */
     private void sendPasswordResetEmail() {
 
+        // valide the given email
         if (!validateEmail()) {
             return;
         }
 
+        // send the reset password email
         firebaseAuth.sendPasswordResetEmail(emailText.getText().toString())
             .addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -88,6 +94,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             });
     }
 
+    /**
+     * validateEmail determines whether or not the given email is valid
+     *
+     * @return boolean
+     */
     private boolean validateEmail() {
 
         boolean valid = true;
@@ -95,10 +106,12 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         TextInputLayout emailTIL = findViewById(R.id.email_text_layout);
         String email = emailText.getText().toString();
 
+        // email is required
         if (TextUtils.isEmpty(email)) {
             emailTIL.setError("Required");
             valid = false;
         }
+        // must be a valid email address
         else if (!isValidEmail(email)) {
             emailTIL.setError("Please enter a valid email");
             valid = false;
@@ -110,6 +123,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         return valid;
     }
 
+    /**
+     * isValidEmail determines whether or not the given email is a valid one
+     * (i.e. has characters before @ symbol, has @ symbol, has a domain)
+     *
+     * @param target given email to be validated
+     * @return  boolean
+     */
     public final boolean isValidEmail(CharSequence target) {
         if (target == null) {
             return false;
@@ -122,6 +142,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * hideKeyboard hides the keyboard; it is called on reset password button press
+     *
+     * @param view the activity view
+     */
     public void hideKeyboard(View view) {
         final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
@@ -129,6 +154,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * dispatchTouchEvent is used to remove focus from text fields when touch is
+     * triggered outside the text field
+     *
+     * @param event touch event
+     * @return boolean
+     */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
