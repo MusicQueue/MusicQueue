@@ -10,12 +10,16 @@ public class Queue {
     private String location;
     private String docId;
     private Timestamp created;
+    private Integer songCount;
+
+
 
     public Queue(String name, String location, String docId, Timestamp created) {
         this.name = name;
         this.location = location;
         this.docId = docId;
         this.created = created;
+        this.songCount = 0;
     }
 
     public Timestamp getCreated() {
@@ -49,4 +53,6 @@ public class Queue {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Integer getSongCount() { return songCount;}
 }
