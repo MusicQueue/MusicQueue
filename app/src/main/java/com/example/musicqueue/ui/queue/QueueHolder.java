@@ -1,22 +1,32 @@
 package com.example.musicqueue.ui.queue;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.AbstractQueue;
-import com.example.musicqueue.models.Queue;
 import com.google.android.material.chip.Chip;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import javax.annotation.Nonnull;
 
 public class QueueHolder extends RecyclerView.ViewHolder {
 
+
     private String docid;
     private final TextView queueNameTV, queueLocationTV, songSizeTV;
     private final Chip favoriteChip;
+
+    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    private CollectionReference queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
     public QueueHolder(@Nonnull final View itemView){
         super(itemView);
@@ -32,7 +42,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         setDocId(queue.getDocId());
         setName(queue.getName());
         setLocation(queue.getLocation());
-        setSongSize(queue.getDocId());
+        setSongSize(queue.getSongCount());
         setFavorite(true);
     }
 
@@ -42,13 +52,22 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     private void setLocation(@Nonnull String loc) {this.queueLocationTV.setText(loc);}
 
-    private void setSongSize(@Nonnull String docid) {
-        //TODO: actually get a count of songs, here or in the model
-        this.songSizeTV.setText("0");
+    private void setSongSize(@Nonnull Integer songCount) {
+        this.songSizeTV.setText(songCount.toString());
     }
 
     private void setFavorite(@Nonnull boolean fave) {
         favoriteChip.setChecked(fave);
-        
+        favoriteChip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((Chip)v).isChecked()) {
+                    ((Chip) v).setTextColor(Color.parseColor(Constants.CHECKED_COLOR));
+                }
+                else {
+                    ((Chip) v).setTextColor(Color.parseColor(Constants.UNCHECKED_COLOR));
+                }
+            }
+        });
     }
 }
