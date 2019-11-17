@@ -13,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.account.SettingsActivity"></activity>
         <activity
             android:name=".authentication.SignInActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -25,13 +24,15 @@
         </activity>
         <activity
             android:name=".authentication.EmailPasswordActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".authentication.RegisterActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".authentication.ForgotPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.song.SongActivity"/>
+        <activity android:name=".ui.account.SettingsActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" />

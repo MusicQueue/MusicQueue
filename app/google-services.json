@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "407769768282-fji3p4p4m21m5de7r3ebfarg2kufum8b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.musicqueue",
+            "certificate_hash": "f5988ac2c08e15c3fcd46c46292dc51f76a75e51"
+          }
+        },
+        {
           "client_id": "407769768282-eea6pitgf4qhr9ci1v7igj53qk8hkbdo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
