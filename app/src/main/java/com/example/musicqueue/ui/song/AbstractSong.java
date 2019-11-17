@@ -1,4 +1,4 @@
-package com.example.musicqueue.models;
+package com.example.musicqueue.ui.song;
 
 import androidx.annotation.Nullable;
 
