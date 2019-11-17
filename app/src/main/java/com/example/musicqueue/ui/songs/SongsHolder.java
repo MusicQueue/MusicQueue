@@ -1,4 +1,4 @@
-package com.example.musicqueue.ui.song;
+package com.example.musicqueue.ui.songs;
 
 import android.view.View;
 import android.widget.TextView;
@@ -32,7 +32,7 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         downChip = itemView.findViewById(R.id.chip_down);
     }
 
-    public void bind(@NonNull AbstractSong song) {
+    public void bind(@NonNull AbstractSongs song) {
         setName(song.getName());
         setArtist(song.getArtist());
         setVotes(song.getVotes());

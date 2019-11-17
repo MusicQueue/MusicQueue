@@ -31,7 +31,7 @@
         <activity
             android:name=".authentication.ForgotPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.song.SongActivity"/>
+        <activity android:name=".ui.songs.SongsActivity"/>
         <activity android:name=".ui.account.SettingsActivity" />
         <activity
             android:name=".MainActivity"
