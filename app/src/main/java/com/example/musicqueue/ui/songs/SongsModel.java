@@ -1,21 +1,21 @@
-package com.example.musicqueue.ui.song;
+package com.example.musicqueue.ui.songs;
 
 import androidx.annotation.Nullable;
 
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class SongModel extends AbstractSong {
+public class SongsModel extends AbstractSongs {
 
     private String name;
     private String artist;
     private long votes;
     private String docid;
 
-    public SongModel() {}
+    public SongsModel() {}
 
-    public SongModel(@Nullable String name, @Nullable String artist,
-                     long votes, @Nullable String docid) {
+    public SongsModel(@Nullable String name, @Nullable String artist,
+                      long votes, @Nullable String docid) {
         this.name = name;
         this.artist = artist;
         this.votes = votes;

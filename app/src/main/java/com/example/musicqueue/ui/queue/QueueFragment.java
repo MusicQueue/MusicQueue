@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
-import com.example.musicqueue.ui.song.SongActivity;
+import com.example.musicqueue.ui.songs.SongsActivity;
 
 public class QueueFragment extends Fragment {
 
@@ -44,7 +44,7 @@ public class QueueFragment extends Fragment {
         songFragBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getContext(), SongActivity.class));
+                startActivity(new Intent(getContext(), SongsActivity.class));
             }
         });
 

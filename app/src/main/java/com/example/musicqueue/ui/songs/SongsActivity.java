@@ -1,4 +1,4 @@
-package com.example.musicqueue.ui.song;
+package com.example.musicqueue.ui.songs;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,15 +20,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-public class SongActivity extends AppCompatActivity {
+public class SongsActivity extends AppCompatActivity {
 
-    private static final String TAG = "SongFragment";
+    private static final String TAG = "SongsActivity";
 
     RecyclerView mRecycler;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference songsCollection;
-    private FirestoreRecyclerAdapter<SongModel, SongsHolder> adapter;
+    private FirestoreRecyclerAdapter<SongsModel, SongsHolder> adapter;
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -58,13 +58,13 @@ public class SongActivity extends AppCompatActivity {
         Query baseQuery = songsCollection.orderBy("votes", Query.Direction.ASCENDING);
 
         //TODO Make sure the document names are correct
-        FirestoreRecyclerOptions<SongModel> options =
-                new FirestoreRecyclerOptions.Builder<SongModel>()
-                        .setQuery(baseQuery, new SnapshotParser<SongModel>() {
+        FirestoreRecyclerOptions<SongsModel> options =
+                new FirestoreRecyclerOptions.Builder<SongsModel>()
+                        .setQuery(baseQuery, new SnapshotParser<SongsModel>() {
                             @NonNull
                             @Override
-                            public SongModel parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                                return new SongModel(
+                            public SongsModel parseSnapshot(@NonNull DocumentSnapshot snapshot) {
+                                return new SongsModel(
                                         snapshot.get("name").toString(),
                                         snapshot.get("artist").toString(),
                                         (long) snapshot.get("votes"),
@@ -73,9 +73,9 @@ public class SongActivity extends AppCompatActivity {
                         })
                         .build();
 
-        adapter = new FirestoreRecyclerAdapter<SongModel, SongsHolder>(options) {
+        adapter = new FirestoreRecyclerAdapter<SongsModel, SongsHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull SongsHolder holder, int position, @NonNull SongModel model) {
+            protected void onBindViewHolder(@NonNull SongsHolder holder, int position, @NonNull SongsModel model) {
                 holder.setDocId(model.getDocId());
                 holder.setName(model.getName());
                 holder.setArtist(model.getArtist());

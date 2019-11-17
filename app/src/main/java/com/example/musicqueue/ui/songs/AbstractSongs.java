@@ -1,8 +1,8 @@
-package com.example.musicqueue.ui.song;
+package com.example.musicqueue.ui.songs;
 
 import androidx.annotation.Nullable;
 
-public abstract class AbstractSong {
+public abstract class AbstractSongs {
 
     @Nullable
     public abstract String getName();
