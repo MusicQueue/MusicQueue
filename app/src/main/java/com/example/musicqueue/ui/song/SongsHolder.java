@@ -9,25 +9,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.R;
 import com.google.android.material.chip.Chip;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SongsHolder extends RecyclerView.ViewHolder {
-
-    private static final String FONT_LIGHT = "#FAFAFA";
-    private static final String FONT_DARK = "#212121";
 
     private final TextView songNameTV,  artistNameTV, songRankTV;
     private final Chip upChip, downChip;
     private String docid;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-    private CollectionReference songCollection = firestore.collection("users")
-            .document(firebaseUser.getUid())
-            .collection("songs");
+    private CollectionReference songCollection = firestore.collection("testSongs");
 
     public SongsHolder(@NonNull final View itemView){
         super(itemView);
@@ -41,20 +33,19 @@ public class SongsHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(@NonNull AbstractSong song) {
-        setSongName(song.getSongName());
-        setArtistName(song.getArtistName());
-        setSongRank(song.getSongRank());
+        setName(song.getName());
+        setArtist(song.getArtist());
+        setVotes(song.getVotes());
         setDocId(song.getDocId());
-
     }
 
     public void setDocId(@Nullable String docid) { this.docid = docid; }
 
-    public void setSongName(@Nullable String songName) { this.songNameTV.setText(songName); }
+    public void setName(@Nullable String name) { this.songNameTV.setText(name); }
 
-    public void setArtistName(@Nullable String artistName) { this.artistNameTV.setText(artistName); }
+    public void setArtist(@Nullable String artist) { this.artistNameTV.setText(artist); }
 
-    public void setSongRank(@Nullable int songRank) { this.songRankTV.setText(songRank);}
+    public void setVotes(long votes) { this.songRankTV.setText(Long.toString(votes));}
 
     /*
     * TODO Add in methods for up and down on clicks

@@ -7,44 +7,43 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class SongModel extends AbstractSong {
 
-    private String songName;
-    private String artistName;
-    private int songRank;
+    private String name;
+    private String artist;
+    private long votes;
     private String docid;
 
     public SongModel() {}
 
-    public SongModel(@Nullable String songName, @Nullable String artistName,
-                     @Nullable int songRank, @Nullable String docid) {
-        this.songName = songName;
-        this.artistName = artistName;
-        this.songRank = songRank;
+    public SongModel(@Nullable String name, @Nullable String artist,
+                     long votes, @Nullable String docid) {
+        this.name = name;
+        this.artist = artist;
+        this.votes = votes;
         this.docid = docid;
     }
 
     @Override
-    public void setSongName(String s) { this.songName = s; }
+    public void setName(String s) { this.name = s; }
 
     @Override
-    public void setArtistName(String s) { this.artistName = s; }
+    public void setArtist(String s) { this.artist = s; }
 
     @Override
-    public void setSongRank(int i) { this.songRank = i; }
+    public void setVotes(long i) { this.votes = i; }
 
     @Override
     public void setDocId(String s) { this.docid = s; }
 
     @Override
     @Nullable
-    public String getSongName() { return this.songName; }
+    public String getName() { return this.name; }
 
     @Override
     @Nullable
-    public String getArtistName() { return this.artistName; }
+    public String getArtist() { return this.artist; }
 
     @Override
-    @Nullable
-    public int getSongRank() { return this.songRank; }
+    public long getVotes() { return this.votes; }
 
     @Override
     @Nullable

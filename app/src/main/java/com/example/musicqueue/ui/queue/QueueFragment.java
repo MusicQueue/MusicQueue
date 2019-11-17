@@ -1,11 +1,13 @@
 package com.example.musicqueue.ui.queue;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
+import com.example.musicqueue.ui.song.SongActivity;
 
 public class QueueFragment extends Fragment {
 
@@ -36,6 +39,15 @@ public class QueueFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        Button songFragBtn = root.findViewById(R.id.song_fragment_button);
+        songFragBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), SongActivity.class));
+            }
+        });
+
         return root;
     }
 

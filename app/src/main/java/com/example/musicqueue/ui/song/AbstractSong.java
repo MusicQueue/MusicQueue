@@ -5,19 +5,18 @@ import androidx.annotation.Nullable;
 public abstract class AbstractSong {
 
     @Nullable
-    public abstract String getSongName();
+    public abstract String getName();
 
-    public abstract void setSongName(@Nullable String songName);
-
-    @Nullable
-    public abstract String getArtistName();
-
-    public abstract void setArtistName(@Nullable String artistName);
+    public abstract void setName(@Nullable String name);
 
     @Nullable
-    public abstract int getSongRank();
+    public abstract String getArtist();
 
-    public abstract void setSongRank(@Nullable int songRank);
+    public abstract void setArtist(@Nullable String artist);
+
+    public abstract long getVotes();
+
+    public abstract void setVotes(long votes);
 
     @Nullable
     public abstract String getDocId();
