@@ -38,12 +38,14 @@ public class SongsActivity extends AppCompatActivity {
      * TODO: this is the docid for the queue that the songs are under, use this to update
      * TODO: the sountCount in the queue so that we properly track the amount of songs
      */
-    String queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
+    String queueDocid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song);
+
+        queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
 
         songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
             .document(queueDocid)
