@@ -1,4 +1,4 @@
-package com.example.musicqueue.ui.search;
+package com.example.musicqueue.ui.favorites;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -19,18 +19,18 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 
-public class SearchFragment extends Fragment {
+public class FavoritesFragment extends Fragment {
 
-    private SearchViewModel searchViewModel;
+    private FavoritesViewModel favoritesViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        searchViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_search, container, false);
+        favoritesViewModel = ViewModelProviders.of(this).get(FavoritesViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         setColors();
 
         final TextView textView = root.findViewById(R.id.text_search);
-        searchViewModel.getText().observe(this, new Observer<String>() {
+        favoritesViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

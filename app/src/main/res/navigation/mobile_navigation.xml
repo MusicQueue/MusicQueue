@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_queue" />
 
     <fragment
-        android:id="@+id/navigation_search"
-        android:name="com.example.musicqueue.ui.search.SearchFragment"
-        android:label="@string/title_search"
-        tools:layout="@layout/fragment_search" />
+        android:id="@+id/navigation_favorites"
+        android:name="com.example.musicqueue.ui.favorites.FavoritesFragment"
+        android:label="@string/title_favorite"
+        tools:layout="@layout/fragment_favorites" />
 
     <fragment
         android:id="@+id/navigation_library"

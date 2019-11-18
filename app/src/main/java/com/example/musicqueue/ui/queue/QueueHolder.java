@@ -1,14 +1,19 @@
 package com.example.musicqueue.ui.queue;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.AbstractQueue;
+import com.example.musicqueue.ui.songs.SongsActivity;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,6 +28,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
     private String docid;
     private final TextView queueNameTV, queueLocationTV, songSizeTV;
     private final Chip favoriteChip;
+    private final CardView cardView;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -36,6 +42,8 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         songSizeTV = itemView.findViewById(R.id.song_size_text_view);
 
         favoriteChip = itemView.findViewById(R.id.fave_chip);
+
+        cardView = itemView.findViewById(R.id.card_view);
     }
 
     public void bind(@Nonnull AbstractQueue queue) {
@@ -46,11 +54,11 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         setFavorite(false);
     }
 
-    public void setDocId(@Nonnull String docId) { this.docid = docId;}
+    public void setDocId(@Nonnull String docId) { this.docid = docId; }
 
-    public void setName(@Nonnull String name) {this.queueNameTV.setText(name);}
+    public void setName(@Nonnull String name) { this.queueNameTV.setText(name); }
 
-    public void setLocation(@Nonnull String loc) {this.queueLocationTV.setText(loc);}
+    public void setLocation(@Nonnull String loc) { this.queueLocationTV.setText(loc); }
 
     public void setSongSize(@Nonnull Long songCount) {
         this.songSizeTV.setText(songCount.toString());
@@ -67,6 +75,18 @@ public class QueueHolder extends RecyclerView.ViewHolder {
                 else {
                     ((Chip) v).setTextColor(Color.parseColor(Constants.UNCHECKED_COLOR));
                 }
+            }
+        });
+    }
+
+    public void initCardClickListener(final String docid) {
+        cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = itemView.getContext();
+                Intent intent = new Intent(context, SongsActivity.class);
+                intent.putExtra("DOCUMENT_ID", docid);
+                context.startActivity(intent);
             }
         });
     }
