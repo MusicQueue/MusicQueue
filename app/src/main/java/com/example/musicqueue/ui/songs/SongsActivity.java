@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -38,7 +39,10 @@ public class SongsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song);
 
-        songsCollection = firestore.collection("testSongs");
+        String docid = getIntent().getStringExtra("DOCUMENT_ID");
+        songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
+            .document(docid)
+            .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
         mRecycler = findViewById(R.id.songs_recycler);
         linearLayoutManager = new LinearLayoutManager(this);
@@ -50,6 +54,7 @@ public class SongsActivity extends AppCompatActivity {
     }
 
     private void initActionbar() {
+        getSupportActionBar().setElevation(0);  // remove actionbar shadow
         getSupportActionBar().setTitle(R.string.title_songs);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

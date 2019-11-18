@@ -102,7 +102,7 @@ public class EmailPasswordActivity extends AppCompatActivity {
         password = passwordText.getText().toString();
 
         // validate user input
-        if (!validateForm()) {
+        if (!validateForm(email, password)) {
             return;
         }
 
@@ -137,15 +137,11 @@ public class EmailPasswordActivity extends AppCompatActivity {
      *
      * @return boolean
      */
-    private boolean validateForm() {
+    public boolean validateForm(String email, String password) {
         boolean valid = true;
 
         TextInputLayout emailTIL = findViewById(R.id.email_text_layout);
         TextInputLayout passwordTIL = findViewById(R.id.password_text_layout);
-
-        String email, password;
-        email = emailText.getText().toString();
-        password = passwordText.getText().toString();
 
         // email field is required
         if (TextUtils.isEmpty(email)) {

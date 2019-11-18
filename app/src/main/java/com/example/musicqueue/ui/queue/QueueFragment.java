@@ -76,14 +76,6 @@ public class QueueFragment extends Fragment {
 
         setUpAdapter();
 
-        Button songFragBtn = root.findViewById(R.id.song_fragment_button);
-        songFragBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getContext(), SongsActivity.class));
-            }
-        });
-
         return root;
     }
 
@@ -100,7 +92,7 @@ public class QueueFragment extends Fragment {
                                 return new Queue(
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
                                         FirebaseUtils.getStringOrEmpty(snapshot, "location"),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "docid"),
+                                        snapshot.getId().toString(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"));
                             }
@@ -114,8 +106,8 @@ public class QueueFragment extends Fragment {
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
                 holder.setFavorite(false);
+                holder.initCardClickListener(model.getDocId());
             }
-
 
             @NonNull
             @Override

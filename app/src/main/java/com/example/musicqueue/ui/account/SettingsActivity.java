@@ -84,6 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
      * Account fragment
      */
     private void initActionbar() {
+        getSupportActionBar().setElevation(0);  // remove actionbar shadow
         getSupportActionBar().setTitle(R.string.title_settings);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
