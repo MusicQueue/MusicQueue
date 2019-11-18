@@ -1,5 +1,6 @@
 package com.example.musicqueue.ui.queue;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -7,6 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.widget.Button;
+import android.widget.TextView;
 
 
 import androidx.annotation.NonNull;
@@ -21,6 +25,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
+
 import com.example.musicqueue.models.Queue;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -34,6 +39,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.lang.annotation.Target;
+
+import com.example.musicqueue.ui.songs.SongsActivity;
 
 public class QueueFragment extends Fragment {
 
@@ -67,6 +74,14 @@ public class QueueFragment extends Fragment {
 
         setUpAdapter();
 
+        Button songFragBtn = root.findViewById(R.id.song_fragment_button);
+        songFragBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), SongsActivity.class));
+            }
+        });
+
         return root;
     }
 
@@ -99,6 +114,7 @@ public class QueueFragment extends Fragment {
                 holder.setFavorite(false);
             }
 
+
             @NonNull
             @Override
             public QueueHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -110,7 +126,8 @@ public class QueueFragment extends Fragment {
         };
 
         recyclerView.setAdapter(adapter);
-    }
+
+        }
 
     private void setColors() {
         String PRIMARY_COLOR = "#192125";
