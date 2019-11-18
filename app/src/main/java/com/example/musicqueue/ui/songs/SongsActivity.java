@@ -81,7 +81,7 @@ public class SongsActivity extends AppCompatActivity {
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
                                         FirebaseUtils.getStringOrEmpty(snapshot, "artist"),
                                         FirebaseUtils.getLongOrZero(snapshot,"votes"),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "docid"));
+                                        snapshot.getId().toString());
                             }
                         })
                         .build();
