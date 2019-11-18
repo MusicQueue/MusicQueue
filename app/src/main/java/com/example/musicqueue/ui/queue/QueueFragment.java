@@ -27,6 +27,7 @@ import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 
 import com.example.musicqueue.models.Queue;
+import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
@@ -97,11 +98,11 @@ public class QueueFragment extends Fragment {
                             public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
                                 Log.v(TAG, snapshot.toString());
                                 return new Queue(
-                                        getStringOrEmpty(snapshot, "name"),
-                                        getStringOrEmpty(snapshot, "location"),
-                                        getStringOrEmpty(snapshot, "docid"),
-                                        getTimestampOrNow(snapshot, "created"),
-                                        getLongOrZero(snapshot, "songCount"));
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "name"),
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "location"),
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "docid"),
+                                        FirebaseUtils.getTimestampOrNow(snapshot, "created"),
+                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"));
                             }
                         }).build();
 
@@ -157,24 +158,7 @@ public class QueueFragment extends Fragment {
         super.onStop();
     }
 
-    private static String getStringOrEmpty( DocumentSnapshot snapshot, String field){
-        return snapshot.contains(field) ?
-                snapshot.get(field).toString() :
-                "Does Not Exist";
 
-    }
-
-    private static Timestamp getTimestampOrNow( DocumentSnapshot snapshot, String field) {
-        return snapshot.contains(field) ?
-                (Timestamp) snapshot.get(field) :
-                Timestamp.now();
-    }
-
-    private static Long getLongOrZero( DocumentSnapshot snapshot, String field) {
-        return snapshot.contains(field) ?
-                (Long) snapshot.get(field) :
-                0;
-    }
 
 
 }

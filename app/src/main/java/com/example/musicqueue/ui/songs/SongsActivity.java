@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.musicqueue.R;
+import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
@@ -65,10 +66,10 @@ public class SongsActivity extends AppCompatActivity {
                             @Override
                             public SongsModel parseSnapshot(@NonNull DocumentSnapshot snapshot) {
                                 return new SongsModel(
-                                        snapshot.get("name").toString(),
-                                        snapshot.get("artist").toString(),
-                                        (long) snapshot.get("votes"),
-                                        snapshot.get("docid").toString());
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "name"),
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "artist"),
+                                        FirebaseUtils.getLongOrZero(snapshot,"votes"),
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "docid"));
                             }
                         })
                         .build();
