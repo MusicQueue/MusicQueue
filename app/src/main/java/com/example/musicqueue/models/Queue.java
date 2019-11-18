@@ -5,17 +5,21 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class QueueModel {
+public class Queue {
     private String name;
     private String location;
     private String docId;
     private Timestamp created;
+    private Long songCount;
 
-    public QueueModel(String name, String location, String docId, Timestamp created) {
+
+
+    public Queue(String name, String location, String docId, Timestamp created, Long songCount) {
         this.name = name;
         this.location = location;
         this.docId = docId;
         this.created = created;
+        this.songCount = songCount;
     }
 
     public Timestamp getCreated() {
@@ -49,4 +53,6 @@ public class QueueModel {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Long getSongCount() { return songCount;}
 }
