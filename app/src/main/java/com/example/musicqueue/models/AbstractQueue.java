@@ -20,5 +20,5 @@ public interface AbstractQueue {
 
      void setName(String name);
 
-     Integer getSongCount();
+     Long getSongCount();
 }

@@ -39,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.lang.annotation.Target;
+import java.sql.Time;
 
 import com.example.musicqueue.ui.songs.SongsActivity;
 
@@ -96,11 +97,11 @@ public class QueueFragment extends Fragment {
                             public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
                                 Log.v(TAG, snapshot.toString());
                                 return new Queue(
-                                        snapshot.get("name").toString(),
-                                        snapshot.get("location").toString(),
-                                        snapshot.get("docid").toString(),
-                                        (Timestamp) snapshot.get("created"),
-                                        (Integer) snapshot.get("songCount"));
+                                        getStringOrEmpty(snapshot, "name"),
+                                        getStringOrEmpty(snapshot, "location"),
+                                        getStringOrEmpty(snapshot, "docid"),
+                                        getTimestampOrNow(snapshot, "created"),
+                                        getLongOrZero(snapshot, "songCount"));
                             }
                         }).build();
 
@@ -155,4 +156,25 @@ public class QueueFragment extends Fragment {
         }
         super.onStop();
     }
+
+    private static String getStringOrEmpty( DocumentSnapshot snapshot, String field){
+        return snapshot.contains(field) ?
+                snapshot.get(field).toString() :
+                "Does Not Exist";
+
+    }
+
+    private static Timestamp getTimestampOrNow( DocumentSnapshot snapshot, String field) {
+        return snapshot.contains(field) ?
+                (Timestamp) snapshot.get(field) :
+                Timestamp.now();
+    }
+
+    private static Long getLongOrZero( DocumentSnapshot snapshot, String field) {
+        return snapshot.contains(field) ?
+                (Long) snapshot.get(field) :
+                0;
+    }
+
+
 }

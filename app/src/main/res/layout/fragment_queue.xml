@@ -9,9 +9,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/queue_recycler"
         android:layout_width="409dp"
-        android:layout_height="692dp"
-        android:layout_marginEnd="2dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/song_fragment_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

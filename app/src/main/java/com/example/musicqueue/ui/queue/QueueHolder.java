@@ -52,7 +52,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public void setLocation(@Nonnull String loc) {this.queueLocationTV.setText(loc);}
 
-    public void setSongSize(@Nonnull Integer songCount) {
+    public void setSongSize(@Nonnull Long songCount) {
         this.songSizeTV.setText(songCount.toString());
     }
 
