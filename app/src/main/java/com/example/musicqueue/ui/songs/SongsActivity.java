@@ -34,14 +34,19 @@ public class SongsActivity extends AppCompatActivity {
 
     private LinearLayoutManager linearLayoutManager;
 
+    /**
+     * TODO: this is the docid for the queue that the songs are under, use this to update
+     * TODO: the sountCount in the queue so that we properly track the amount of songs
+     */
+    String queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song);
 
-        String docid = getIntent().getStringExtra("DOCUMENT_ID");
         songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
-            .document(docid)
+            .document(queueDocid)
             .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
         mRecycler = findViewById(R.id.songs_recycler);
