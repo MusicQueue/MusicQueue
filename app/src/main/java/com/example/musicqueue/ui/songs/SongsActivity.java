@@ -68,7 +68,7 @@ public class SongsActivity extends AppCompatActivity {
                                         snapshot.get("name").toString(),
                                         snapshot.get("artist").toString(),
                                         (long) snapshot.get("votes"),
-                                        snapshot.get("docid").toString());
+                                        snapshot.getId().toString());
                             }
                         })
                         .build();
