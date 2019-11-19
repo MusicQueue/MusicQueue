@@ -1,5 +1,6 @@
 package com.example.musicqueue.ui.queue;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -8,9 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.widget.Button;
-import android.widget.TextView;
 
 
 import androidx.annotation.NonNull;
@@ -27,22 +25,17 @@ import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 
 import com.example.musicqueue.models.Queue;
+import com.example.musicqueue.ui.songs.SongsActivity;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
-import java.lang.annotation.Target;
-import java.sql.Time;
-
-import com.example.musicqueue.ui.songs.SongsActivity;
 
 public class QueueFragment extends Fragment {
 
@@ -76,6 +69,15 @@ public class QueueFragment extends Fragment {
 
         setUpAdapter();
 
+        root.findViewById(R.id.new_queue_button).setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view){
+               Context context = view.getContext();
+               Intent intent = new Intent(context, NewQueueActivity.class);
+               context.startActivity(intent);
+           }
+        });
+
         return root;
     }
 
@@ -92,7 +94,7 @@ public class QueueFragment extends Fragment {
                                 return new Queue(
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
                                         FirebaseUtils.getStringOrEmpty(snapshot, "location"),
-                                        snapshot.getId().toString(),
+                                        snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"));
                             }

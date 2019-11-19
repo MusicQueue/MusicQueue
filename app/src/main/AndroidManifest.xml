@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.queue.NewQueueActivity"></activity>
         <activity
             android:name=".authentication.SignInActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -31,7 +32,7 @@
         <activity
             android:name=".authentication.ForgotPasswordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.songs.SongsActivity"/>
+        <activity android:name=".ui.songs.SongsActivity" />
         <activity android:name=".ui.account.SettingsActivity" />
         <activity
             android:name=".MainActivity"
