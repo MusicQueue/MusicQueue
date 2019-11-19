@@ -68,8 +68,6 @@ public class NewQueueActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                                                         @Override
                                                                         public void onComplete(@NonNull Task<DocumentReference> task) {
-                                                                            task.getResult()
-                                                                                    .collection(Constants.FIRESTORE_SONG_COLLECTION);
                                                                             Context context = v.getContext();
                                                                             Intent intent = new Intent(context, QueueFragment.class);
                                                                             context.startActivity(intent);
