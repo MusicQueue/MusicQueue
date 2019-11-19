@@ -16,8 +16,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
+import com.example.musicqueue.utilities.CommonUtils;
+import com.example.musicqueue.utilities.FormUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class EmailPasswordActivity extends AppCompatActivity {
 
+    public TextInputLayout emailTIL, passwordTIL;
     private TextInputEditText emailText, passwordText;
     private FirebaseAuth firebaseAuth;
 
@@ -43,6 +47,8 @@ public class EmailPasswordActivity extends AppCompatActivity {
             finish();
         }
 
+        emailTIL = findViewById(R.id.email_text_layout);
+        passwordTIL = findViewById(R.id.password_text_layout);
         emailText = findViewById(R.id.email_text_input);
         passwordText = findViewById(R.id.password_text_input);
 
@@ -101,8 +107,7 @@ public class EmailPasswordActivity extends AppCompatActivity {
         email = emailText.getText().toString();
         password = passwordText.getText().toString();
 
-        // validate user input
-        if (!validateForm(email, password)) {
+        if (!FormUtils.validateEmailPassForm(email, password, emailTIL, passwordTIL)) {
             return;
         }
 
@@ -112,13 +117,13 @@ public class EmailPasswordActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            showToast("Login successful!");
+                            CommonUtils.showToast(getApplicationContext(), "Login successful!");
                             Intent intent = new Intent(EmailPasswordActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                         }
                         else {
-                            showToast("Login failed! Incorrect username or password.");
+                            CommonUtils.showToast(getApplicationContext(), "Login failed! Incorrect username or password.");
                         }
                     }
                 });
@@ -132,64 +137,6 @@ public class EmailPasswordActivity extends AppCompatActivity {
     }
 
     /**
-     * validateForm determines wheter or not user input is valid for
-     * authentication
-     *
-     * @return boolean
-     */
-    public boolean validateForm(String email, String password) {
-        boolean valid = true;
-
-        TextInputLayout emailTIL = findViewById(R.id.email_text_layout);
-        TextInputLayout passwordTIL = findViewById(R.id.password_text_layout);
-
-        // email field is required
-        if (TextUtils.isEmpty(email)) {
-            emailTIL.setError("Required");
-            valid = false;
-        }
-        // checks validation of the email
-        else if (!isValidEmail(email)) {
-            emailTIL.setError("Please enter a valid email");
-            valid = false;
-        }
-        else {
-            emailTIL.setError(null);
-        }
-
-        // password is required
-        if (TextUtils.isEmpty(password)) {
-            passwordTIL.setError("Required");
-            valid = false;
-        }
-        // user password needs to be at least 8 characters in length
-        else if (password.length() <= 8) {
-            passwordTIL.setError("Password invalid, must be at least 8 characters");
-            valid = false;
-        }
-        else {
-            passwordTIL.setError(null);
-        }
-
-        return valid;
-    }
-
-    /**
-     * isValidEmail determines whether or not the given email is a valid one
-     * (i.e. has characters before @ symbol, has @ symbol, has a domain)
-     *
-     * @param target given email to be validated
-     * @return  boolean
-     */
-    public final boolean isValidEmail(CharSequence target) {
-        if (target == null) {
-            return false;
-        }
-
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
-    /**
      * hideKeyboard hides the keyboard; it is called on button presses
      *
      * @param view the activity view
@@ -199,10 +146,6 @@ public class EmailPasswordActivity extends AppCompatActivity {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-    }
-
-    public void showToast(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     /**
