@@ -58,10 +58,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checkable="true"
+                    android:checked="false"
                     app:checkedIcon="@drawable/ic_arrow_up_bold_circle_green"
+                    app:checkedIconVisible="true"
                     app:chipBackgroundColor="@color/colorSecondary"
                     app:chipEndPadding="0dp"
                     app:chipIcon="@drawable/ic_arrow_up_bold_circle"
+                    app:chipIconVisible="true"
+                    app:closeIconVisible="false"
                     app:iconStartPadding="10dp" />
 
                 <TextView
@@ -80,9 +84,11 @@
                     android:layout_height="wrap_content"
                     android:checkable="true"
                     app:checkedIcon="@drawable/ic_arrow_down_bold_circle_red"
+                    app:checkedIconVisible="true"
                     app:chipBackgroundColor="@color/colorSecondary"
                     app:chipEndPadding="0dp"
                     app:chipIcon="@drawable/ic_arrow_down_bold_circle"
+                    app:chipIconVisible="true"
                     app:iconStartPadding="10dp" />
 
             </LinearLayout>

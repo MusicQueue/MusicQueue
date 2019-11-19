@@ -137,7 +137,7 @@
                 android:textColor="@color/colorFontLight"
                 android:textSize="18sp" />-->
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/notifications_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                 android:paddingBottom="12sp"
                 android:text="@string/notifications"
                 android:textColor="@color/colorFontLight"
-                android:textSize="18sp" />
+                android:textSize="18sp" />-->
 
             <TextView
                 android:id="@+id/advanced_settings_text_view"
