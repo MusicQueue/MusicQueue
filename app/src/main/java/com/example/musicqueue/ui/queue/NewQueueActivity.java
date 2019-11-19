@@ -56,7 +56,7 @@ public class NewQueueActivity extends AppCompatActivity {
                 Queue newQueue = new Queue(
                         queueNameET.getText().toString(),
                         queueLocationET.getText().toString(),
-                        "",
+                        queueCollection.document().getId(),
                         Timestamp.now(),
                         Integer.toUnsignedLong(0)
                 );
