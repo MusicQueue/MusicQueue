@@ -64,17 +64,13 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         this.songSizeTV.setText(songCount.toString());
     }
 
-    public void setFavorite(@Nonnull boolean fave) {
+    public void setFavorite(@Nonnull final boolean fave) {
         favoriteChip.setChecked(fave);
         favoriteChip.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (((Chip)v).isChecked()) {
-                    ((Chip) v).setTextColor(Color.parseColor(Constants.CHECKED_COLOR));
-                }
-                else {
-                    ((Chip) v).setTextColor(Color.parseColor(Constants.UNCHECKED_COLOR));
-                }
+            public void onClick(View view) {
+                favoriteChip.setChecked(!fave);
+                queueCollection.document(docid).update("favorite", !fave);
             }
         });
     }

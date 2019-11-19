@@ -96,7 +96,8 @@ public class QueueFragment extends Fragment {
                                         FirebaseUtils.getStringOrEmpty(snapshot, "location"),
                                         snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
-                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"));
+                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"),
+                                        (boolean) snapshot.get("favorite"));
                             }
                         }).build();
 
@@ -109,6 +110,7 @@ public class QueueFragment extends Fragment {
                 holder.setSongSize(model.getSongCount());
                 holder.setFavorite(false);
                 holder.initCardClickListener(model.getDocId());
+                holder.setFavorite(model.getFavorite());
             }
 
             @NonNull
@@ -123,7 +125,7 @@ public class QueueFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
 
-        }
+    }
 
     private void setColors() {
         String PRIMARY_COLOR = "#192125";
@@ -151,8 +153,5 @@ public class QueueFragment extends Fragment {
         }
         super.onStop();
     }
-
-
-
 
 }

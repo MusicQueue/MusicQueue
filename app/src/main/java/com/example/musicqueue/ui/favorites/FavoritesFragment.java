@@ -3,6 +3,7 @@ package com.example.musicqueue.ui.favorites;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +16,37 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
+import com.example.musicqueue.models.Queue;
+import com.example.musicqueue.ui.queue.QueueHolder;
+import com.example.musicqueue.utilities.FirebaseUtils;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.firebase.ui.firestore.SnapshotParser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 public class FavoritesFragment extends Fragment {
 
+    private static final String TAG = "FavoritesFragment";
+
     private FavoritesViewModel favoritesViewModel;
+
+    RecyclerView recyclerView;
+    private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private CollectionReference queueCollection;
+    private FirestoreRecyclerAdapter<Queue, QueueHolder> adapter;
+
+    private LinearLayoutManager linearLayoutManager;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         favoritesViewModel = ViewModelProviders.of(this).get(FavoritesViewModel.class);
@@ -29,15 +54,61 @@ public class FavoritesFragment extends Fragment {
 
         setColors();
 
-        final TextView textView = root.findViewById(R.id.text_search);
-        favoritesViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+
+        recyclerView = root.findViewById(R.id.favorite_recycler);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        setUpAdapter();
 
         return root;
+    }
+
+    private void setUpAdapter() {
+        Query baseQuery = queueCollection.whereEqualTo("favorite", true);
+
+        FirestoreRecyclerOptions<Queue> options =
+                new FirestoreRecyclerOptions.Builder<Queue>()
+                        .setQuery(baseQuery, new SnapshotParser<Queue>() {
+                            @NonNull
+                            @Override
+                            public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
+                                Log.v(TAG, snapshot.toString());
+                                return new Queue(
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "name"),
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "location"),
+                                        snapshot.getId(),
+                                        FirebaseUtils.getTimestampOrNow(snapshot, "created"),
+                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"),
+                                        (boolean) snapshot.get("favorite"));
+                            }
+                        }).build();
+
+        adapter = new FirestoreRecyclerAdapter<Queue, QueueHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull QueueHolder holder, int position, @NonNull Queue model) {
+                holder.setDocId(model.getDocId());
+                holder.setName(model.getName());
+                holder.setLocation(model.getLocation());
+                holder.setSongSize(model.getSongCount());
+                holder.setFavorite(false);
+                holder.initCardClickListener(model.getDocId());
+                holder.setFavorite(model.getFavorite());
+            }
+
+            @NonNull
+            @Override
+            public QueueHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.queue_card_layout, parent, false);
+
+                return new QueueHolder(view);
+            }
+        };
+
+        recyclerView.setAdapter(adapter);
+
     }
 
     private void setColors() {
@@ -51,5 +122,19 @@ public class FavoritesFragment extends Fragment {
             String COLOR_FONT_LIGHT = "#F5F5F5";
             toolbar.setTitleTextColor(Color.parseColor(COLOR_FONT_LIGHT));
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        if (adapter != null) {
+            adapter.stopListening();
+        }
+        super.onStop();
     }
 }

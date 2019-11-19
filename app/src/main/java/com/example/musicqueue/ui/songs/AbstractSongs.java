@@ -22,4 +22,9 @@ public abstract class AbstractSongs {
     public abstract String getDocId();
 
     public abstract void setDocId(@Nullable String docid);
+
+    @Nullable
+    public abstract String getQueueId();
+
+    public abstract void setQueueId(@Nullable String docid);
 }

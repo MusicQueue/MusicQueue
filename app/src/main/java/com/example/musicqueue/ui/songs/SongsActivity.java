@@ -99,7 +99,8 @@ public class SongsActivity extends AppCompatActivity {
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
                                         FirebaseUtils.getStringOrEmpty(snapshot, "artist"),
                                         FirebaseUtils.getLongOrZero(snapshot,"votes"),
-                                        snapshot.getId().toString());
+                                        snapshot.getId().toString(),
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "queueId"));
                             }
                         })
                         .build();
@@ -111,6 +112,7 @@ public class SongsActivity extends AppCompatActivity {
                 holder.setName(model.getName());
                 holder.setArtist(model.getArtist());
                 holder.setVotes(model.getVotes());
+                holder.setQueueId(model.getQueueId());
             }
 
             @NonNull
