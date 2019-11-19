@@ -50,6 +50,7 @@
                     android:id="@+id/fave_chip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checkable="true"
                     android:text="Favorite"
                     android:textAlignment="viewStart"
                     app:checkedIcon="@drawable/ic_star_24px"

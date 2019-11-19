@@ -14,13 +14,15 @@ public class Queue {
     private String docId;
     private Timestamp created;
     private Long songCount;
+    private boolean favorite;
 
-    public Queue(String name, String location, String docId, Timestamp created, Long songCount) {
+    public Queue(String name, String location, String docId, Timestamp created, Long songCount, boolean favorite) {
         this.name = name;
         this.location = location;
         this.docId = docId;
         this.created = created;
         this.songCount = songCount;
+        this.favorite = favorite;
     }
 
     public Timestamp getCreated() {
@@ -56,4 +58,8 @@ public class Queue {
     }
 
     public Long getSongCount() { return songCount;}
+
+    public void setFavorite(boolean b) { this.favorite = b; }
+
+    public boolean getFavorite() { return this.favorite; }
 }

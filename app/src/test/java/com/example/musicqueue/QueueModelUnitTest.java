@@ -21,7 +21,8 @@ public class QueueModelUnitTest {
                 "On the strip",
                 "",
                 timestamp,
-                Integer.toUnsignedLong(0)
+                Integer.toUnsignedLong(0),
+                true
         );
     }
 
@@ -43,6 +44,15 @@ public class QueueModelUnitTest {
     @Test
     public void testSongCount(){
         Assert.assertEquals(testQueue.getSongCount().intValue(), 0);
+    }
+
+    @Test
+    public void testSetName() {
+        String newName = "new name";
+
+        testQueue.setName(newName);
+
+        Assert.assertEquals(testQueue.getName(), newName);
     }
 
     @After
