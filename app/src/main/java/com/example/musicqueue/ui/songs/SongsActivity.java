@@ -18,6 +18,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -39,6 +40,7 @@ public class SongsActivity extends AppCompatActivity {
      * TODO: the sountCount in the queue so that we properly track the amount of songs
      */
     String queueDocid;
+    String queueName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class SongsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_song);
 
         queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
+        queueName = getIntent().getStringExtra("DOCUMENT_NAME");
 
         songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
             .document(queueDocid)
@@ -62,7 +65,7 @@ public class SongsActivity extends AppCompatActivity {
 
     private void initActionbar() {
         getSupportActionBar().setElevation(0);  // remove actionbar shadow
-        getSupportActionBar().setTitle(R.string.title_songs);
+        getSupportActionBar().setTitle(queueName);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
