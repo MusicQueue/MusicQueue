@@ -17,6 +17,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.musicqueue.R;
+import com.example.musicqueue.utilities.CommonUtils;
+import com.example.musicqueue.utilities.FormUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
@@ -25,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 
+    private TextInputLayout emailTIL;
     private TextInputEditText emailText;
     private FirebaseAuth firebaseAuth;
     private final String TAG = "ForgotPasswordActivity";
@@ -35,7 +38,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forgot_password);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
+        emailTIL = findViewById(R.id.email_text_layout);
         emailText = findViewById(R.id.email_text_input);
         emailText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -70,76 +73,30 @@ public class ForgotPasswordActivity extends AppCompatActivity {
      */
     private void sendPasswordResetEmail() {
 
+        String email = emailText.getText().toString();
+
         // valide the given email
-        if (!validateEmail()) {
+        if (!FormUtils.validateEmailForm(email, emailTIL)) {
             return;
         }
 
         // send the reset password email
-        firebaseAuth.sendPasswordResetEmail(emailText.getText().toString())
+        firebaseAuth.sendPasswordResetEmail(email)
             .addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        showToast("Password reset email sent!");
+                        CommonUtils.showToast(getApplicationContext(), "Password reset email sent!");
                         Log.d(TAG, "Email sent.");
                         startActivity(new Intent(ForgotPasswordActivity.this, EmailPasswordActivity.class));
                         finish();
                     }
                     else {
-                        showToast("Password reset email failed!");
+                        CommonUtils.showToast(getApplicationContext(), "Password reset email failed!");
                         Log.d(TAG, "Email failed.");
                     }
                 }
             });
-    }
-
-    /**
-     * validateEmail determines whether or not the given email is valid
-     *
-     * @return boolean
-     */
-    private boolean validateEmail() {
-
-        boolean valid = true;
-
-        TextInputLayout emailTIL = findViewById(R.id.email_text_layout);
-        String email = emailText.getText().toString();
-
-        // email is required
-        if (TextUtils.isEmpty(email)) {
-            emailTIL.setError("Required");
-            valid = false;
-        }
-        // must be a valid email address
-        else if (!isValidEmail(email)) {
-            emailTIL.setError("Please enter a valid email");
-            valid = false;
-        }
-        else {
-            emailTIL.setError(null);
-        }
-
-        return valid;
-    }
-
-    /**
-     * isValidEmail determines whether or not the given email is a valid one
-     * (i.e. has characters before @ symbol, has @ symbol, has a domain)
-     *
-     * @param target given email to be validated
-     * @return  boolean
-     */
-    public final boolean isValidEmail(CharSequence target) {
-        if (target == null) {
-            return false;
-        }
-
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-    }
-
-    public void showToast(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     /**

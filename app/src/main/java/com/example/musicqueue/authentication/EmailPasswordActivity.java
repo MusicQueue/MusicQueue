@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
+import com.example.musicqueue.utilities.CommonUtils;
 import com.example.musicqueue.utilities.FormUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -116,13 +117,13 @@ public class EmailPasswordActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            showToast("Login successful!");
+                            CommonUtils.showToast(getApplicationContext(), "Login successful!");
                             Intent intent = new Intent(EmailPasswordActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                         }
                         else {
-                            showToast("Login failed! Incorrect username or password.");
+                            CommonUtils.showToast(getApplicationContext(), "Login failed! Incorrect username or password.");
                         }
                     }
                 });
@@ -145,10 +146,6 @@ public class EmailPasswordActivity extends AppCompatActivity {
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
-    }
-
-    public void showToast(String msg) {
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     /**

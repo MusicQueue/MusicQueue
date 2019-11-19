@@ -4,7 +4,20 @@ import android.text.TextUtils;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.regex.Pattern;
+
 public class FormUtils {
+
+    // Email pattern Regex
+    public static final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
+            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+            "\\@" +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+            "(" +
+            "\\." +
+            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+            ")+"
+    );
 
     /**
      * inputIsEmpty determines wheter or not the input is empty
@@ -23,12 +36,12 @@ public class FormUtils {
      * @param email given email to be validated
      * @return  String
      */
-    public static boolean validateEmail(CharSequence email) {
+    public static boolean validateEmail(String email) {
         if (email == null) {
             return false;
         }
 
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+        return EMAIL_ADDRESS_PATTERN.matcher(email).matches();
     }
 
     /**
@@ -78,6 +91,59 @@ public class FormUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Same logic as one above, but used for testing until I can figure out how to
+     * test wil TextInputLayout
+     *
+     * @param email email
+     * @param pass password
+     * @return boolean
+     */
+    public static boolean validateEmailPassForm(String email, String pass) {
+        boolean result = true;
+
+        if (inputIsEmpty(email)) {
+            result = false;
+        }
+        else if (!validateEmail(email)) {
+            result = false;
+        }
+
+        if (inputIsEmpty(pass)) {
+            result = false;
+        }
+        else if (!validatePassword(pass)) {
+            result = false;
+        }
+
+        return result;
+    }
+
+    /**
+     * validateEmail determines whether or not the given email is valid
+     *
+     * @return boolean
+     */
+    public static boolean validateEmailForm(String email, TextInputLayout emailTIL) {
+        boolean valid = true;
+
+        // email is required
+        if (inputIsEmpty(email)) {
+            emailTIL.setError("Required");
+            valid = false;
+        }
+        // must be a valid email address
+        else if (!validateEmail(email)) {
+            emailTIL.setError("Please enter a valid email");
+            valid = false;
+        }
+        else {
+            emailTIL.setError(null);
+        }
+
+        return valid;
     }
 
 }
