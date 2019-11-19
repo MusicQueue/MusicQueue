@@ -1,10 +1,10 @@
-package com.example.musicqueue.ui.queue;
+package com.example.musicqueue.ui.songs;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
@@ -25,91 +24,102 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.protobuf.Any;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NewQueueActivity extends AppCompatActivity {
+public class AddSongActivity extends AppCompatActivity {
 
-    private Button queueCreateButton;
+    private Button addSongButton;
 
-    private TextInputLayout queueNameTIL, locationTIL;
-    private TextInputEditText queuenameTIET, locationTIET;
+    private TextInputLayout songNameTIL, artistTIL;
+    private TextInputEditText songNameTIET, artistTIET;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private CollectionReference queueCollection;
+    private CollectionReference songsCollection;
+
+    String queueDocid;
+    String songCount;
+    Long songCountLong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_queue);
+        setContentView(R.layout.activity_add_song);
 
-        queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+        queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
+        songCount = getIntent().getStringExtra("SONG_COUNT");
+        songCountLong = Long.parseLong(songCount);
 
-        queueNameTIL = findViewById(R.id.queue_name_text_input_layout);
-        locationTIL = findViewById(R.id.location_text_input_layout);
+        songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
+                .document(queueDocid)
+                .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
-        queuenameTIET = findViewById(R.id.queue_name_text_input_edit_text);
-        locationTIET = findViewById(R.id.location_text_input_edit_text);
+        songNameTIL = findViewById(R.id.song_name_text_input_layout);
+        artistTIL = findViewById(R.id.artist_text_input_layout);
 
-        queuenameTIET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        songNameTIET = findViewById(R.id.song_name_text_input_edit_text);
+        artistTIET = findViewById(R.id.artist_text_input_edit_text);
+
+        songNameTIET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    queuenameTIET.clearFocus();
+                    songNameTIET.clearFocus();
                 }
             }
         });
 
-        locationTIET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        artistTIET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    locationTIET.clearFocus();
+                    artistTIET.clearFocus();
                 }
             }
         });
 
-        findViewById(R.id.queueCreateButton).setOnClickListener(new View.OnClickListener(){
+        findViewById(R.id.add_song_button).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(final View v) {
-                createQueue();
+                addSong();
             }
 
 
         });
 
         initActionbar();
-
     }
 
-    public void createQueue() {
-        if (FormUtils.inputIsEmpty(queuenameTIET.getText().toString())) {
-            queueNameTIL.setError("Reuired");
+    public void addSong() {
+        if (FormUtils.inputIsEmpty(songNameTIET.getText().toString())) {
+            songNameTIL.setError("Reuired");
             return;
         }
-        if (FormUtils.inputIsEmpty(locationTIET.getText().toString())) {
-            locationTIL.setError("Required");
+        if (FormUtils.inputIsEmpty(artistTIET.getText().toString())) {
+            artistTIL.setError("Required");
             return;
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("name", queuenameTIET.getText().toString());
-        data.put("location", locationTIET.getText().toString());
-        data.put("created", Timestamp.now());
-        data.put("songCount", Integer.toUnsignedLong(0));
+        data.put("name", songNameTIET.getText().toString());
+        data.put("artist", artistTIET.getText().toString());
+        data.put("votes", Integer.toUnsignedLong(0));
 
-        queueCollection.add(data)
+        songsCollection.add(data)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {
-                        CommonUtils.showToast(getApplicationContext(), "Added queue!");
-                        task.getResult().collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+                        songCountLong = songCountLong + 1;
+                        CollectionReference queueref = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+                        queueref.document(queueDocid).update("songCount", songCountLong);
+
+                        CommonUtils.showToast(getApplicationContext(), "Added song!");
+                        task.getResult().collection(Constants.FIRESTORE_SONG_COLLECTION);
                         finish();
                     }
                 });
