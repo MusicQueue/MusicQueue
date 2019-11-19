@@ -6,13 +6,12 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Queue {
+
     private String name;
     private String location;
     private String docId;
     private Timestamp created;
     private Long songCount;
-
-
 
     public Queue(String name, String location, String docId, Timestamp created, Long songCount) {
         this.name = name;
