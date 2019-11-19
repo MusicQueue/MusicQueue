@@ -2,12 +2,14 @@ package com.example.musicqueue.models;
 
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Queue {
     private String name;
     private String location;
+    @DocumentId
     private String docId;
     private Timestamp created;
     private Long songCount;
