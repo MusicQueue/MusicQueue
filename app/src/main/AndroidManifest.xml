@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.queue.NewQueueActivity"></activity>
+        <activity android:name=".ui.songs.AddSongActivity"></activity>
+        <activity android:name=".ui.queue.NewQueueActivity" />
         <activity
             android:name=".authentication.SignInActivity"
             android:theme="@style/AppTheme.NoActionBar">

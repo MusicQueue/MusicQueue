@@ -87,6 +87,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
                 Intent intent = new Intent(context, SongsActivity.class);
                 intent.putExtra("DOCUMENT_ID", docid);
                 intent.putExtra("DOCUMENT_NAME", queueNameTV.getText().toString());
+                intent.putExtra("SONG_COUNT", songSizeTV.getText().toString());
                 context.startActivity(intent);
             }
         });

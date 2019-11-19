@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -41,6 +43,7 @@ public class SongsActivity extends AppCompatActivity {
      */
     String queueDocid;
     String queueName;
+    String soungCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,18 +52,30 @@ public class SongsActivity extends AppCompatActivity {
 
         queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
         queueName = getIntent().getStringExtra("DOCUMENT_NAME");
+        soungCount = getIntent().getStringExtra("SONG_COUNT");
 
         songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
             .document(queueDocid)
             .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
-        mRecycler = findViewById(R.id.songs_recycler);
-        linearLayoutManager = new LinearLayoutManager(this);
+        mRecycler = findViewById(R.id.song_recycler);
+        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         mRecycler.setLayoutManager(linearLayoutManager);
 
         setUpAdapter();
 
         initActionbar();
+
+        findViewById(R.id.add_song_fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = view.getContext();
+                Intent intent = new Intent(context, AddSongActivity.class);
+                intent.putExtra("DOCUMENT_ID", queueDocid);
+                intent.putExtra("SONG_COUNT", soungCount);
+                context.startActivity(intent);
+            }
+        });
     }
 
     private void initActionbar() {
