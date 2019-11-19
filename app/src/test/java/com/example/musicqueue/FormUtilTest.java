@@ -16,6 +16,12 @@ public class FormUtilTest {
     String passFalse = "pass";
 
     @Test
+    public void testValidateEmail() {
+        assertTrue(FormUtils.validateEmail(emailTrue));
+        assertFalse(FormUtils.validateEmail(emailFalse));
+    }
+
+    @Test
     public void testValidatePassword() {
         assertTrue(FormUtils.validatePassword(passTrue));
         assertFalse(FormUtils.validatePassword(passFalse));

@@ -88,11 +88,11 @@ public class NewQueueActivity extends AppCompatActivity {
 
     public void createQueue() {
         if (FormUtils.inputIsEmpty(queuenameTIET.getText().toString())) {
-            //TODO: Queue Name is required
+            queueNameTIL.setError("Reuired");
             return;
         }
         if (FormUtils.inputIsEmpty(locationTIET.getText().toString())) {
-            //TODO: Queue Name is required
+            locationTIL.setError("Required");
             return;
         }
         Queue newQueue = new Queue(
