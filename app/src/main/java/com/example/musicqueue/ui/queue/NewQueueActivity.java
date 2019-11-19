@@ -28,11 +28,8 @@ public class NewQueueActivity extends AppCompatActivity {
 
     private EditText queueNameET, queueLocationET;
 
-    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-    private FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +63,15 @@ public class NewQueueActivity extends AppCompatActivity {
 
                 queueCollection.add(newQueue)
                         .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                                                        @Override
-                                                                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                                                                            task.getResult()
-                                                                                    .collection(Constants.FIRESTORE_SONG_COLLECTION);
-                                                                            Context context = v.getContext();
-                                                                            Intent intent = new Intent(context, QueueFragment.class);
-                                                                            context.startActivity(intent);
-                                                                        }
-                                                                    });
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentReference> task) {
+                                    task.getResult()
+                                            .collection(Constants.FIRESTORE_SONG_COLLECTION);
+                                    Context context = v.getContext();
+                                    Intent intent = new Intent(context, QueueFragment.class);
+                                    context.startActivity(intent);
+                                }
+                            });
             }
 
 

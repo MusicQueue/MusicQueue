@@ -139,8 +139,8 @@ public class RegisterActivity extends AppCompatActivity {
                             firebaseUser.updateProfile(profile);
 
                             // add the user's display name and email to the database
-                            Map<String, Object> data = new HashMap<>();
-                            data.put("displayName", firebaseUser.getDisplayName());
+                            Map<String, String> data = new HashMap<>();
+                            data.put("displayName", firebaseUser.getDisplayName().toString());
                             data.put("email", email);
                             db.collection("users").document(firebaseUser.getUid())
                                     .set(data, SetOptions.merge());
