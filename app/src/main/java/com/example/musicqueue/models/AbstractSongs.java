@@ -1,4 +1,4 @@
-package com.example.musicqueue.ui.songs;
+package com.example.musicqueue.models;
 
 import androidx.annotation.Nullable;
 
@@ -27,4 +27,9 @@ public abstract class AbstractSongs {
     public abstract String getQueueId();
 
     public abstract void setQueueId(@Nullable String docid);
+
+    @Nullable
+    public abstract String getOwnerUid();
+
+    public abstract void setOwnerUid(@Nullable String ownerUid);
 }

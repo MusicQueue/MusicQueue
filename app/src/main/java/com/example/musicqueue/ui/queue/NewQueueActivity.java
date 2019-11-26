@@ -103,6 +103,7 @@ public class NewQueueActivity extends AppCompatActivity {
         data.put("location", locationTIET.getText().toString());
         data.put("created", Timestamp.now());
         data.put("songCount", Integer.toUnsignedLong(0));
+        data.put("favorite", false);
 
         queueCollection.add(data)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

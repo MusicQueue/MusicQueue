@@ -1,4 +1,4 @@
-package com.example.musicqueue.ui.queue;
+package com.example.musicqueue.holders;
 
 import android.content.Context;
 import android.content.Intent;

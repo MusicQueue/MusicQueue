@@ -1,27 +1,31 @@
-package com.example.musicqueue.ui.songs;
+package com.example.musicqueue.models;
 
 import androidx.annotation.Nullable;
 
+import com.example.musicqueue.models.AbstractSongs;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class SongsModel extends AbstractSongs {
+public class Song extends AbstractSongs {
 
     private String name;
     private String artist;
     private long votes;
     private String docid;
     private String queueId;
+    private String ownerUid;
 
-    public SongsModel() {}
+    public Song() {}
 
-    public SongsModel(@Nullable String name, @Nullable String artist,
-                      long votes, @Nullable String docid, @Nullable String queueId) {
+    public Song(@Nullable String name, @Nullable String artist,
+                long votes, @Nullable String docid, @Nullable String queueId,
+                @Nullable String ownerUid) {
         this.name = name;
         this.artist = artist;
         this.votes = votes;
         this.docid = docid;
         this.queueId = queueId;
+        this.ownerUid = ownerUid;
     }
 
     @Override
@@ -38,6 +42,9 @@ public class SongsModel extends AbstractSongs {
 
     @Override
     public void setQueueId(String s) { this.queueId = s; }
+
+    @Override
+    public void setOwnerUid(String s) { this.ownerUid = s; }
 
     @Override
     @Nullable
@@ -57,4 +64,8 @@ public class SongsModel extends AbstractSongs {
     @Override
     @Nullable
     public String getQueueId() { return this.queueId; }
+
+    @Override
+    @Nullable
+    public String getOwnerUid() { return this.ownerUid; }
 }

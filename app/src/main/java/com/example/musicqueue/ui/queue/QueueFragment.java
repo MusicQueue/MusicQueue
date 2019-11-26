@@ -24,8 +24,8 @@ import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 
+import com.example.musicqueue.holders.QueueHolder;
 import com.example.musicqueue.models.Queue;
-import com.example.musicqueue.ui.songs.SongsActivity;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -108,7 +108,6 @@ public class QueueFragment extends Fragment {
                 holder.setName(model.getName());
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
-                holder.setFavorite(false);
                 holder.initCardClickListener(model.getDocId());
                 holder.setFavorite(model.getFavorite());
             }
