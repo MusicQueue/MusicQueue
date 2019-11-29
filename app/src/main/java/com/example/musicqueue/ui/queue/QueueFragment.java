@@ -24,8 +24,8 @@ import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 
+import com.example.musicqueue.holders.QueueHolder;
 import com.example.musicqueue.models.Queue;
-import com.example.musicqueue.ui.songs.SongsActivity;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -36,6 +36,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import java.util.List;
+import java.util.Map;
 
 public class QueueFragment extends Fragment {
 
@@ -54,12 +57,16 @@ public class QueueFragment extends Fragment {
 
     private LinearLayoutManager linearLayoutManager;
 
+    private String uid;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
         queueViewModel = ViewModelProviders.of(this).get(QueueViewModel.class);
         View root = inflater.inflate(R.layout.fragment_queue, container, false);
 
         setColors();
+
+        uid = firebaseUser.getUid().toString();
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
@@ -97,7 +104,7 @@ public class QueueFragment extends Fragment {
                                         snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        (boolean) snapshot.get("favorite"));
+                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"));
                             }
                         }).build();
 
@@ -108,9 +115,17 @@ public class QueueFragment extends Fragment {
                 holder.setName(model.getName());
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
-                holder.setFavorite(false);
                 holder.initCardClickListener(model.getDocId());
-                holder.setFavorite(model.getFavorite());
+
+                Map<String, Boolean> favMap = model.getFavoritesMap();
+                holder.setFavoritesMap(favMap);
+
+                if (favMap.containsKey(uid)) {
+                    holder.setFavorite(favMap.get(uid));
+                }
+                else {
+                    holder.setFavorite(false);
+                }
             }
 
             @NonNull

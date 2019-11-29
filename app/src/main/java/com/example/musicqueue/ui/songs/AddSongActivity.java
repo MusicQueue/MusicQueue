@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,16 +41,19 @@ public class AddSongActivity extends AppCompatActivity {
     private TextInputEditText songNameTIET, artistTIET;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-    private CollectionReference songsCollection;
+    private CollectionReference songsCollection, libraryCollection;
 
     String queueDocid;
     String songCount;
+    String uid;
     Long songCountLong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_song);
+
+        uid = FirebaseAuth.getInstance().getUid().toString();
 
         queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
         songCount = getIntent().getStringExtra("SONG_COUNT");
@@ -58,6 +62,10 @@ public class AddSongActivity extends AppCompatActivity {
         songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
                 .document(queueDocid)
                 .collection(Constants.FIRESTORE_SONG_COLLECTION);
+
+        libraryCollection = firestore.collection("users")
+                .document(uid)
+                .collection("librarySongs");
 
         songNameTIL = findViewById(R.id.song_name_text_input_layout);
         artistTIL = findViewById(R.id.artist_text_input_layout);
@@ -105,10 +113,22 @@ public class AddSongActivity extends AppCompatActivity {
             return;
         }
 
+        // [START] add song to library collection
+        Map<String, Object> libraryData = new HashMap<>();
+        libraryData.put("name", songNameTIET.getText().toString());
+        libraryData.put("artist", artistTIET.getText().toString());
+        libraryData.put("ownerUid", uid);
+
+        libraryCollection.add(libraryData);
+        // [END] add song to library collection
+
+        // [START] add song to queue songs collection
         Map<String, Object> data = new HashMap<>();
         data.put("name", songNameTIET.getText().toString());
         data.put("artist", artistTIET.getText().toString());
         data.put("votes", Integer.toUnsignedLong(0));
+        data.put("queueId", queueDocid);
+        data.put("ownerUid", uid);
 
         songsCollection.add(data)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
@@ -123,6 +143,7 @@ public class AddSongActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+        // [END] add song to queue songs collection
     }
 
     /**

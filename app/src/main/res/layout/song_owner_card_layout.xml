@@ -48,14 +48,13 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/owner_text_view"
+                    android:id="@+id/textView4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Long press to delete song"
                     android:textColor="@color/colorAccentGreen"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout

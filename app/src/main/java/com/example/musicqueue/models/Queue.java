@@ -5,6 +5,9 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
+import java.util.List;
+import java.util.Map;
+
 @IgnoreExtraProperties
 public class Queue {
 
@@ -15,14 +18,16 @@ public class Queue {
     private Timestamp created;
     private Long songCount;
     private boolean favorite;
+    private Map<String, Boolean> favoritesMap;
 
-    public Queue(String name, String location, String docId, Timestamp created, Long songCount, boolean favorite) {
+    public Queue(String name, String location, String docId, Timestamp created, Long songCount,
+                 Map<String, Boolean> favoritesMap) {
         this.name = name;
         this.location = location;
         this.docId = docId;
         this.created = created;
         this.songCount = songCount;
-        this.favorite = favorite;
+        this.favoritesMap = favoritesMap;
     }
 
     public Timestamp getCreated() {
@@ -62,4 +67,12 @@ public class Queue {
     public void setFavorite(boolean b) { this.favorite = b; }
 
     public boolean getFavorite() { return this.favorite; }
+
+    public void setFavoritesMap(Map<String, Boolean> favoritesMap) {
+        this.favoritesMap = favoritesMap;
+    }
+
+    public Map<String, Boolean> getFavoritesMap() {
+        return this.favoritesMap;
+    }
 }
