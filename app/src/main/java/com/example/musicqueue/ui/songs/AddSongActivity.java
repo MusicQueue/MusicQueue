@@ -65,7 +65,7 @@ public class AddSongActivity extends AppCompatActivity {
 
         libraryCollection = firestore.collection("users")
                 .document(uid)
-                .collection("library");
+                .collection("librarySongs");
 
         songNameTIL = findViewById(R.id.song_name_text_input_layout);
         artistTIL = findViewById(R.id.artist_text_input_layout);
@@ -113,6 +113,16 @@ public class AddSongActivity extends AppCompatActivity {
             return;
         }
 
+        // [START] add song to library collection
+        Map<String, Object> libraryData = new HashMap<>();
+        libraryData.put("name", songNameTIET.getText().toString());
+        libraryData.put("artist", artistTIET.getText().toString());
+        libraryData.put("ownerUid", uid);
+
+        libraryCollection.add(libraryData);
+        // [END] add song to library collection
+
+        // [START] add song to queue songs collection
         Map<String, Object> data = new HashMap<>();
         data.put("name", songNameTIET.getText().toString());
         data.put("artist", artistTIET.getText().toString());
@@ -133,8 +143,7 @@ public class AddSongActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-
-
+        // [END] add song to queue songs collection
     }
 
     /**
