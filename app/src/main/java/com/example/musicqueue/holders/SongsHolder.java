@@ -28,7 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SongsHolder extends RecyclerView.ViewHolder {
 
-    private final TextView songNameTV,  artistNameTV, songRankTV;
+    private final TextView songNameTV, artistNameTV, songRankTV;
     public final TextView ownerTV;
     private final Chip upChip, downChip;
     private String docid, queueId, ownerUid;

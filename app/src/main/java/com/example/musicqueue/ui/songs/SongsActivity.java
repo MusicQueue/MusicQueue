@@ -24,8 +24,10 @@ import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -39,8 +41,6 @@ public class SongsActivity extends AppCompatActivity {
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference songsCollection;
     private FirestoreRecyclerAdapter<Song, SongsHolder> adapter;
-
-    private LinearLayoutManager linearLayoutManager;
 
     String queueDocid;
     String ownerUid;
@@ -61,7 +61,7 @@ public class SongsActivity extends AppCompatActivity {
             .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
         mRecycler = findViewById(R.id.song_recycler);
-        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         mRecycler.setLayoutManager(linearLayoutManager);
 
         setUpAdapter();
@@ -160,7 +160,21 @@ public class SongsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
+                CollectionReference queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+
+                DocumentReference queueDocRef = queueCollection.document(queueDocid);
+                queueDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Long songCount = FirebaseUtils.getLongOrZero(documentSnapshot, "songCount");
+                        songCount -= 1;
+
+                        updateSongCount(songCount);
+                    }
+                });
+
                 songsCollection.document(docid).delete();
+
 
                 CommonUtils.showToast(getApplicationContext(), "Song deleted");
             }
@@ -173,6 +187,11 @@ public class SongsActivity extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+    private void updateSongCount(Long count) {
+        CollectionReference queue = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+        queue.document(queueDocid).update("songCount", count);
     }
 
     @Override
