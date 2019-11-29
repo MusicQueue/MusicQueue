@@ -42,9 +42,7 @@ public class LibraryFragment extends Fragment {
     private FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference librarySongCollection;
-    private FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder> adapter;
-
-    private LinearLayoutManager linearLayoutManager;
+    private FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder> songsAdapter;
 
     private String uid;
 
@@ -58,13 +56,13 @@ public class LibraryFragment extends Fragment {
             .document(uid)
             .collection("librarySongs");
 
-        recyclerViewSongs = root.findViewById(R.id.library_recycler);
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerViewSongs = root.findViewById(R.id.library_song_recycler);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewSongs.setLayoutManager(linearLayoutManager);
 
-        setUpSongsAdapter();
-
         setColors();
+
+        setUpSongsAdapter();
 
         return root;
     }
@@ -86,7 +84,7 @@ public class LibraryFragment extends Fragment {
                             }
                         }).build();
 
-        adapter = new FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder>(options) {
+        songsAdapter = new FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull LibrarySongsHolder holder, int position, @NonNull LibrarySongs model) {
                 holder.setName(model.getName());
@@ -104,7 +102,7 @@ public class LibraryFragment extends Fragment {
             }
         };
 
-        recyclerViewSongs.setAdapter(adapter);
+        recyclerViewSongs.setAdapter(songsAdapter);
 
     }
 
@@ -124,14 +122,15 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        songsAdapter.startListening();
     }
 
     @Override
     public void onStop() {
-        if (adapter != null) {
-            adapter.stopListening();
+        if (songsAdapter != null) {
+            songsAdapter.stopListening();
         }
         super.onStop();
     }
+
 }

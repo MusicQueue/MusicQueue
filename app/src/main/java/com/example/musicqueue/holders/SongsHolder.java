@@ -7,6 +7,9 @@ import android.view.Gravity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,7 +33,7 @@ public class SongsHolder extends RecyclerView.ViewHolder {
 
     private final TextView songNameTV, artistNameTV, songRankTV;
     public final TextView ownerTV;
-    private final Chip upChip, downChip;
+    private final RadioButton upVote, downVote;
     private String docid, queueId, ownerUid;
     public CardView songCV;
 
@@ -46,41 +49,45 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         artistNameTV = itemView.findViewById(R.id.artist_text_view);
         songRankTV = itemView.findViewById(R.id.vote_count_text_view);
 
-        upChip = itemView.findViewById(R.id.chip_up);
-        downChip = itemView.findViewById(R.id.chip_down);
+        upVote = itemView.findViewById(R.id.radio_up);
+        downVote = itemView.findViewById(R.id.radio_down);
 
         // TODO: Fix voting system
-        upChip.setOnClickListener(new View.OnClickListener() {
+        RadioGroup radioGroup = itemView.findViewById(R.id.vote_radio_group);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
-                        .document(queueId)
-                        .collection(Constants.FIRESTORE_SONG_COLLECTION);
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                                
+                if (i == R.id.radio_up) {
+                    upVoteSong();
+                }
+                else if (i == R.id.radio_down) {
+                    downVoteSong();
+                }
 
-                Long v = Long.parseLong(songRankTV.getText().toString());
-                v = v + 1;
-                songCollection.document(docid).update("votes", v);
-
-                downChip.setChecked(false);
             }
         });
 
-        // TODO: Fix voting system
-        downChip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
-                        .document(queueId)
-                        .collection(Constants.FIRESTORE_SONG_COLLECTION);
+    }
 
-                Long v = Long.parseLong(songRankTV.getText().toString());
-                v = v - 1;
-                songCollection.document(docid).update("votes", v);
+    private void upVoteSong() {
+        songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
+                .document(queueId)
+                .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
-                upChip.setChecked(false);
-            }
-        });
+        long v = Long.parseLong(songRankTV.getText().toString());
+        v = v + 1;
+        songCollection.document(docid).update("votes", v);
+    }
 
+    private void downVoteSong() {
+        songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
+                .document(queueId)
+                .collection(Constants.FIRESTORE_SONG_COLLECTION);
+
+        long v = Long.parseLong(songRankTV.getText().toString());
+        v = v - 1;
+        songCollection.document(docid).update("votes", v);
     }
 
     public void bind(@NonNull AbstractSongs song) {
