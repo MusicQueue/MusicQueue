@@ -20,15 +20,19 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
 public class QueueHolder extends RecyclerView.ViewHolder {
-
 
     private String docid;
     private final TextView queueNameTV, queueLocationTV, songSizeTV;
     private final Chip favoriteChip;
     private final CardView cardView;
+
+    Map<String, Boolean> favoritesMap;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -64,13 +68,18 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         this.songSizeTV.setText(songCount.toString());
     }
 
-    public void setFavorite(@Nonnull final boolean fave) {
+    public void setFavoritesMap(Map<String, Boolean> favoritesMap) {
+        this.favoritesMap = favoritesMap;
+    }
+
+    public void setFavorite(final boolean fave) {
         favoriteChip.setChecked(fave);
         favoriteChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 favoriteChip.setChecked(!fave);
-                queueCollection.document(docid).update("favorite", !fave);
+                favoritesMap.put(firebaseUser.getUid().toString(), !fave);
+                queueCollection.document(docid).update("favorites", favoritesMap);
             }
         });
     }

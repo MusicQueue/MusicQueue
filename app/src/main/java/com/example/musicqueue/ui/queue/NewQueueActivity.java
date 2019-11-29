@@ -98,12 +98,16 @@ public class NewQueueActivity extends AppCompatActivity {
             return;
         }
 
+        Map<String, Boolean> fav = new HashMap<>();
+        fav.put(FirebaseAuth.getInstance().getUid().toString(), true);
+
         Map<String, Object> data = new HashMap<>();
         data.put("name", queuenameTIET.getText().toString());
         data.put("location", locationTIET.getText().toString());
         data.put("created", Timestamp.now());
         data.put("songCount", Integer.toUnsignedLong(0));
-        data.put("favorite", false);
+        data.put("favorites", fav);
+        data.put("ownerUid", FirebaseAuth.getInstance().getUid().toString());
 
         queueCollection.add(data)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

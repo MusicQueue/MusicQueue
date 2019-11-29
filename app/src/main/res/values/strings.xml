@@ -32,10 +32,13 @@
     <!-- Queue Fragment -->
 
 
-    <!-- Search Fragment -->
+    <!-- Favorites Fragment -->
+    <string name="no_favorites">
+        You don\'t have any favorites! Favorites can be added by clicking the "Favorite" chip
+        on the queue page.
+    </string>
 
-
-    <!-- Library Fragment -->
+    <!-- LibrarySongs Fragment -->
 
 
     <!-- Account Fragment -->

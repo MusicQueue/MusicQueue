@@ -21,4 +21,8 @@ public interface AbstractQueue {
      void setName(String name);
 
      Long getSongCount();
+
+     void setFavoritesArray(String[] favoritesArray);
+
+     String[] getFavoritesArray();
 }
