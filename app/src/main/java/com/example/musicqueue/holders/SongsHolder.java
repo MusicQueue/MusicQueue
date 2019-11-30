@@ -1,33 +1,23 @@
 package com.example.musicqueue.holders;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.view.Gravity;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.AbstractSongs;
-import com.example.musicqueue.ui.account.SettingsActivity;
-import com.example.musicqueue.ui.songs.SongsActivity;
-import com.example.musicqueue.utilities.CommonUtils;
-import com.google.android.material.chip.Chip;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
 
 public class SongsHolder extends RecyclerView.ViewHolder {
 
@@ -38,7 +28,9 @@ public class SongsHolder extends RecyclerView.ViewHolder {
     public CardView songCV;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private String uid = FirebaseAuth.getInstance().getUid().toString();
     private CollectionReference songCollection;
+    private Map<String, Boolean> votersMap;
 
     public SongsHolder(@NonNull final View itemView){
         super(itemView);
@@ -57,7 +49,7 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                                
+
                 if (i == R.id.radio_up) {
                     upVoteSong();
                 }
@@ -78,6 +70,7 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         long v = Long.parseLong(songRankTV.getText().toString());
         v = v + 1;
         songCollection.document(docid).update("votes", v);
+        //songCollection.document(docid).update("voters." + uid, true);
     }
 
     private void downVoteSong() {
@@ -88,6 +81,7 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         long v = Long.parseLong(songRankTV.getText().toString());
         v = v - 1;
         songCollection.document(docid).update("votes", v);
+        //songCollection.document(docid).update("voters." + uid, false);
     }
 
     public void bind(@NonNull AbstractSongs song) {
@@ -97,6 +91,7 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         setDocId(song.getDocId());
         setQueueId(song.getQueueId());
         setOwnerUid(song.getOwnerUid());
+        setVotersMap(song.getVotersMap());
     }
 
     public void setDocId(@Nullable String docid) { this.docid = docid; }
@@ -110,5 +105,16 @@ public class SongsHolder extends RecyclerView.ViewHolder {
     public void setArtist(@Nullable String artist) { this.artistNameTV.setText(artist); }
 
     public void setVotes(long votes) { this.songRankTV.setText(Long.toString(votes)); }
+
+    public void setVotersMap(Map<String, Boolean> map) { this.votersMap = map; }
+
+    public void setVoteArrows(boolean b) {
+        /*if (b) {
+            upVote.setChecked(true);
+        }
+        else {
+            downVote.setChecked(true);
+        }*/
+    }
 
 }

@@ -124,6 +124,9 @@ public class AddSongActivity extends AppCompatActivity {
 
         // [START] add song to queue songs collection
         Map<String, Object> data = new HashMap<>();
+        Map<String, Boolean> votersMap = new HashMap<>();
+        votersMap.put(uid, true);
+        data.put("voters", votersMap);
         data.put("name", songNameTIET.getText().toString());
         data.put("artist", artistTIET.getText().toString());
         data.put("votes", Integer.toUnsignedLong(0));
