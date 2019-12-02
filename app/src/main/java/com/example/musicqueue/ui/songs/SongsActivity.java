@@ -32,6 +32,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.Map;
+
 public class SongsActivity extends AppCompatActivity {
 
     private static final String TAG = "SongsActivity";
@@ -43,7 +45,6 @@ public class SongsActivity extends AppCompatActivity {
     private FirestoreRecyclerAdapter<Song, SongsHolder> adapter;
 
     String queueDocid;
-    String ownerUid;
     String queueName;
     String soungCount;
 
@@ -88,7 +89,7 @@ public class SongsActivity extends AppCompatActivity {
     }
 
     private void setUpAdapter() {
-        Query baseQuery = songsCollection.orderBy("votes", Query.Direction.ASCENDING);
+        Query baseQuery = songsCollection.orderBy("votes", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<Song> options =
                 new FirestoreRecyclerOptions.Builder<Song>()
@@ -102,7 +103,8 @@ public class SongsActivity extends AppCompatActivity {
                                         FirebaseUtils.getLongOrZero(snapshot,"votes"),
                                         snapshot.getId().toString(),
                                         FirebaseUtils.getStringOrEmpty(snapshot, "queueId"),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "ownerUid"));
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "ownerUid"),
+                                        FirebaseUtils.getMapOrInit(snapshot, "voters"));
                             }
                         })
                         .build();
@@ -116,10 +118,12 @@ public class SongsActivity extends AppCompatActivity {
                 holder.setVotes(model.getVotes());
                 holder.setQueueId(model.getQueueId());
                 holder.setOwnerUid(model.getOwnerUid());
+                holder.setVotersMap(model.getVotersMap());
 
-                setOwnerUid(model.getOwnerUid());
+                String uid = FirebaseAuth.getInstance().getUid().toString();
+                String ownerUid = model.getOwnerUid();
 
-                if (FirebaseAuth.getInstance().getUid().toString().equals(ownerUid)) {
+                if (uid.equals(ownerUid)) {
                     holder.ownerTV.setVisibility(View.VISIBLE);
                     holder.songCV.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
@@ -130,6 +134,12 @@ public class SongsActivity extends AppCompatActivity {
                             return true;
                         }
                     });
+                }
+
+                Map<String, Boolean> map = model.getVotersMap();
+
+                if (map.containsKey(FirebaseAuth.getInstance().getUid().toString())) {
+                    holder.setVoteArrows(map.get(uid));
                 }
             }
 
@@ -143,10 +153,6 @@ public class SongsActivity extends AppCompatActivity {
         };
 
         mRecycler.setAdapter(adapter);
-    }
-
-    private void setOwnerUid(String s) {
-        ownerUid = s;
     }
 
     private void deleteSongDialog(final View view, final String docid) {

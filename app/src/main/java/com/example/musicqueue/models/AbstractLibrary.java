@@ -19,4 +19,9 @@ public abstract class AbstractLibrary {
 
     public abstract void setOwnerUid(@Nullable String s);
 
+    @Nullable
+    public abstract String getDocid();
+
+    public abstract void setDocid(@Nullable String s);
+
 }

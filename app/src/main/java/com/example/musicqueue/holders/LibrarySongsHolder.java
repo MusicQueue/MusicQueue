@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.R;
@@ -15,11 +16,13 @@ public class LibrarySongsHolder extends RecyclerView.ViewHolder {
 
     private final TextView songNameTV, artistNameTV;
     private final Button addToQueueButton;
-    private String ownerUid;
+    public CardView songCV;
+    private String ownerUid, docid;
 
     public LibrarySongsHolder(@NonNull final View itemView){
         super(itemView);
 
+        songCV = itemView.findViewById(R.id.song_card_view);
         songNameTV = itemView.findViewById(R.id.song_title_text_view);
         artistNameTV = itemView.findViewById(R.id.artist_text_view);
 
@@ -36,6 +39,7 @@ public class LibrarySongsHolder extends RecyclerView.ViewHolder {
         setName(library.getName());
         setArtist(library.getArtist());
         setOwnerUid(library.getOwnerUid());
+        setDocid(library.getDocid());
     }
 
     public void setOwnerUid(@Nullable String ownerUid) { this.ownerUid = ownerUid; }
@@ -43,6 +47,8 @@ public class LibrarySongsHolder extends RecyclerView.ViewHolder {
     public void setName(@Nullable String name) { this.songNameTV.setText(name); }
 
     public void setArtist(@Nullable String artist) { this.artistNameTV.setText(artist); }
+
+    public void setDocid(String docid) { this.docid = docid; }
 
     private void addToQueue() {
 

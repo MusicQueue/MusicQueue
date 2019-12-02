@@ -1,5 +1,6 @@
 package com.example.musicqueue.ui.library;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -16,17 +18,21 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 import com.example.musicqueue.holders.LibrarySongsHolder;
 import com.example.musicqueue.models.LibrarySongs;
+import com.example.musicqueue.utilities.CommonUtils;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -42,9 +48,7 @@ public class LibraryFragment extends Fragment {
     private FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference librarySongCollection;
-    private FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder> adapter;
-
-    private LinearLayoutManager linearLayoutManager;
+    private FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder> songsAdapter;
 
     private String uid;
 
@@ -58,13 +62,13 @@ public class LibraryFragment extends Fragment {
             .document(uid)
             .collection("librarySongs");
 
-        recyclerViewSongs = root.findViewById(R.id.library_recycler);
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerViewSongs = root.findViewById(R.id.library_song_recycler);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewSongs.setLayoutManager(linearLayoutManager);
 
-        setUpSongsAdapter();
-
         setColors();
+
+        setUpSongsAdapter();
 
         return root;
     }
@@ -82,16 +86,28 @@ public class LibraryFragment extends Fragment {
                                 return new LibrarySongs(
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
                                         FirebaseUtils.getStringOrEmpty(snapshot, "artist"),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "ownerUid"));
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "ownerUid"),
+                                        snapshot.getId().toString());
                             }
                         }).build();
 
-        adapter = new FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder>(options) {
+        songsAdapter = new FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull LibrarySongsHolder holder, int position, @NonNull LibrarySongs model) {
+            protected void onBindViewHolder(@NonNull LibrarySongsHolder holder, int position, @NonNull final LibrarySongs model) {
                 holder.setName(model.getName());
                 holder.setArtist(model.getArtist());
                 holder.setOwnerUid(model.getOwnerUid());
+                holder.setDocid(model.getDocid());
+
+                holder.songCV.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+
+                        deleteSongDialog(view, model.getDocid());
+
+                        return true;
+                    }
+                });
             }
 
             @NonNull
@@ -104,8 +120,32 @@ public class LibraryFragment extends Fragment {
             }
         };
 
-        recyclerViewSongs.setAdapter(adapter);
+        recyclerViewSongs.setAdapter(songsAdapter);
 
+    }
+
+    private void deleteSongDialog(final View view, final String docid) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), R.style.AppTheme_AlertDialogTheme);
+        builder.setTitle("Delete Song");
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_delete_song, null);
+        builder.setView(v);
+
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                librarySongCollection.document(docid).delete();
+                CommonUtils.showToast(view.getContext(), "Song deleted");
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
     private void setColors() {
@@ -124,14 +164,15 @@ public class LibraryFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        songsAdapter.startListening();
     }
 
     @Override
     public void onStop() {
-        if (adapter != null) {
-            adapter.stopListening();
+        if (songsAdapter != null) {
+            songsAdapter.stopListening();
         }
         super.onStop();
     }
+
 }

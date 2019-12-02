@@ -1,41 +1,36 @@
 package com.example.musicqueue.holders;
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.view.Gravity;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.AbstractSongs;
-import com.example.musicqueue.ui.account.SettingsActivity;
-import com.example.musicqueue.ui.songs.SongsActivity;
-import com.example.musicqueue.utilities.CommonUtils;
-import com.google.android.material.chip.Chip;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
 
 public class SongsHolder extends RecyclerView.ViewHolder {
 
     private final TextView songNameTV, artistNameTV, songRankTV;
     public final TextView ownerTV;
-    private final Chip upChip, downChip;
+    private final RadioButton upVote, downVote;
     private String docid, queueId, ownerUid;
     public CardView songCV;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+    private String uid = FirebaseAuth.getInstance().getUid().toString();
     private CollectionReference songCollection;
+    private Map<String, Boolean> votersMap;
 
     public SongsHolder(@NonNull final View itemView){
         super(itemView);
@@ -46,41 +41,47 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         artistNameTV = itemView.findViewById(R.id.artist_text_view);
         songRankTV = itemView.findViewById(R.id.vote_count_text_view);
 
-        upChip = itemView.findViewById(R.id.chip_up);
-        downChip = itemView.findViewById(R.id.chip_down);
+        upVote = itemView.findViewById(R.id.radio_up);
+        downVote = itemView.findViewById(R.id.radio_down);
 
         // TODO: Fix voting system
-        upChip.setOnClickListener(new View.OnClickListener() {
+        RadioGroup radioGroup = itemView.findViewById(R.id.vote_radio_group);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
-                        .document(queueId)
-                        .collection(Constants.FIRESTORE_SONG_COLLECTION);
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
 
-                Long v = Long.parseLong(songRankTV.getText().toString());
-                v = v + 1;
-                songCollection.document(docid).update("votes", v);
+                if (i == R.id.radio_up) {
+                    upVoteSong();
+                }
+                else if (i == R.id.radio_down) {
+                    downVoteSong();
+                }
 
-                downChip.setChecked(false);
             }
         });
 
-        // TODO: Fix voting system
-        downChip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
-                        .document(queueId)
-                        .collection(Constants.FIRESTORE_SONG_COLLECTION);
+    }
 
-                Long v = Long.parseLong(songRankTV.getText().toString());
-                v = v - 1;
-                songCollection.document(docid).update("votes", v);
+    private void upVoteSong() {
+        songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
+                .document(queueId)
+                .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
-                upChip.setChecked(false);
-            }
-        });
+        long v = Long.parseLong(songRankTV.getText().toString());
+        v = v + 1;
+        songCollection.document(docid).update("votes", v);
+        //songCollection.document(docid).update("voters." + uid, true);
+    }
 
+    private void downVoteSong() {
+        songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
+                .document(queueId)
+                .collection(Constants.FIRESTORE_SONG_COLLECTION);
+
+        long v = Long.parseLong(songRankTV.getText().toString());
+        v = v - 1;
+        songCollection.document(docid).update("votes", v);
+        //songCollection.document(docid).update("voters." + uid, false);
     }
 
     public void bind(@NonNull AbstractSongs song) {
@@ -90,6 +91,7 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         setDocId(song.getDocId());
         setQueueId(song.getQueueId());
         setOwnerUid(song.getOwnerUid());
+        setVotersMap(song.getVotersMap());
     }
 
     public void setDocId(@Nullable String docid) { this.docid = docid; }
@@ -103,5 +105,16 @@ public class SongsHolder extends RecyclerView.ViewHolder {
     public void setArtist(@Nullable String artist) { this.artistNameTV.setText(artist); }
 
     public void setVotes(long votes) { this.songRankTV.setText(Long.toString(votes)); }
+
+    public void setVotersMap(Map<String, Boolean> map) { this.votersMap = map; }
+
+    public void setVoteArrows(boolean b) {
+        /*if (b) {
+            upVote.setChecked(true);
+        }
+        else {
+            downVote.setChecked(true);
+        }*/
+    }
 
 }
