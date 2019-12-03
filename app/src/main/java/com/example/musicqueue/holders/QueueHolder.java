@@ -29,10 +29,11 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     private String docid;
     private final TextView queueNameTV, queueLocationTV, songSizeTV;
-    private final Chip favoriteChip;
-    private final CardView cardView;
+    public final Chip favoriteChip;
+    public final CardView cardView;
+    private long songCount;
 
-    Map<String, Boolean> favoritesMap;
+    private Map<String, Boolean> favoritesMap;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -65,6 +66,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
     public void setLocation(@Nonnull String loc) { this.queueLocationTV.setText(loc); }
 
     public void setSongSize(@Nonnull Long songCount) {
+        this.songCount = songCount;
         this.songSizeTV.setText(songCount.toString());
     }
 
@@ -96,5 +98,13 @@ public class QueueHolder extends RecyclerView.ViewHolder {
                 context.startActivity(intent);
             }
         });
+    }
+
+    public String getQueueId() {
+        return this.docid;
+    }
+
+    public long getSongCount() {
+        return this.songCount;
     }
 }

@@ -1,10 +1,12 @@
 package com.example.musicqueue.ui.songs;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,8 +20,10 @@ import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.Queue;
 import com.example.musicqueue.utilities.CommonUtils;
+import com.example.musicqueue.utilities.FirebaseUtils;
 import com.example.musicqueue.utilities.FormUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -27,7 +31,12 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.model.Document;
 import com.google.protobuf.Any;
 
 import java.util.HashMap;
@@ -35,7 +44,7 @@ import java.util.Map;
 
 public class AddSongActivity extends AppCompatActivity {
 
-    private Button addSongButton;
+    private final static String TAG = "AddSongActivity";
 
     private TextInputLayout songNameTIL, artistTIL;
     private TextInputEditText songNameTIET, artistTIET;
@@ -43,10 +52,9 @@ public class AddSongActivity extends AppCompatActivity {
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference songsCollection, libraryCollection;
 
-    String queueDocid;
-    String songCount;
-    String uid;
-    Long songCountLong;
+    private String queueDocid;
+    private String uid;
+    private Long songCountLong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +64,7 @@ public class AddSongActivity extends AppCompatActivity {
         uid = FirebaseAuth.getInstance().getUid().toString();
 
         queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
-        songCount = getIntent().getStringExtra("SONG_COUNT");
+        String songCount = getIntent().getStringExtra("SONG_COUNT");
         songCountLong = Long.parseLong(songCount);
 
         songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
@@ -113,22 +121,74 @@ public class AddSongActivity extends AppCompatActivity {
             return;
         }
 
-        // [START] add song to library collection
-        Map<String, Object> libraryData = new HashMap<>();
-        libraryData.put("name", songNameTIET.getText().toString());
-        libraryData.put("artist", artistTIET.getText().toString());
-        libraryData.put("ownerUid", uid);
+        final String songName = songNameTIET.getText().toString();
+        final String songArtist = artistTIET.getText().toString();
 
-        libraryCollection.add(libraryData);
-        // [END] add song to library collection
+        // check to see if song already exists in user's library
+        // only add the song if it doesn't already exist
+        libraryCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    boolean exists = false;
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
+                        if (doc.get("name").toString().equals(songName) && doc.get("artist").toString().equals(songArtist)) {
+                            exists = true;
+                        }
+                    }
+                    if (!exists) {
+                        addToLibrary(songName, songArtist);
+                    }
+                }
+            }
+        });
 
+        songsCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    boolean exists = false;
+                    for (QueryDocumentSnapshot doc : task.getResult()) {
+                        if (doc.get("name").toString().equals(songName) && doc.get("artist").toString().equals(songArtist)) {
+                            exists = true;
+                        }
+                    }
+                    if (exists) {
+                        songExistsDialog();
+                    }
+                    else {
+                        addSongToQueue(songName, songArtist);
+                    }
+                }
+            }
+        });
+    }
+
+    private void songExistsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AddSongActivity.this, R.style.AppTheme_AlertDialogTheme);
+        builder.setTitle("Song in Queue");
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_song_exists, null);
+        builder.setView(v);
+
+        builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void addSongToQueue(String songName, String songArtist) {
         // [START] add song to queue songs collection
         Map<String, Object> data = new HashMap<>();
         Map<String, Boolean> votersMap = new HashMap<>();
         votersMap.put(uid, true);
         data.put("voters", votersMap);
-        data.put("name", songNameTIET.getText().toString());
-        data.put("artist", artistTIET.getText().toString());
+        data.put("name", songName);
+        data.put("artist", songArtist);
         data.put("votes", Integer.toUnsignedLong(0));
         data.put("queueId", queueDocid);
         data.put("ownerUid", uid);
@@ -147,6 +207,17 @@ public class AddSongActivity extends AppCompatActivity {
                     }
                 });
         // [END] add song to queue songs collection
+    }
+
+    private void addToLibrary(String songName, String songArtist) {
+        // [START] add song to library collection
+        Map<String, Object> libraryData = new HashMap<>();
+        libraryData.put("name", songName);
+        libraryData.put("artist", songArtist);
+        libraryData.put("ownerUid", uid);
+
+        libraryCollection.add(libraryData);
+        // [END] add song to library collection
     }
 
     /**

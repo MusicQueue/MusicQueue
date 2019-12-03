@@ -1,5 +1,7 @@
 package com.example.musicqueue.holders;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.AbstractLibrary;
+import com.example.musicqueue.ui.library.AddToQueueActivity;
+import com.example.musicqueue.ui.songs.SongsActivity;
 
 public class LibrarySongsHolder extends RecyclerView.ViewHolder {
 
@@ -51,7 +55,11 @@ public class LibrarySongsHolder extends RecyclerView.ViewHolder {
     public void setDocid(String docid) { this.docid = docid; }
 
     private void addToQueue() {
-
+        Context context = itemView.getContext();
+        Intent intent = new Intent(context, AddToQueueActivity.class);
+        intent.putExtra("SONG_NAME", this.songNameTV.getText().toString());
+        intent.putExtra("SONG_ARTIST", this.artistNameTV.getText().toString());
+        context.startActivity(intent);
     }
 
 }
