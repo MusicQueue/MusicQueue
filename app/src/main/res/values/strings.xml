@@ -32,10 +32,13 @@
     <!-- Queue Fragment -->
 
 
-    <!-- Search Fragment -->
+    <!-- Favorites Fragment -->
+    <string name="no_favorites">
+        You don\'t have any favorites! Favorites can be added by clicking the "Favorite" chip
+        on the queue page.
+    </string>
 
-
-    <!-- Library Fragment -->
+    <!-- LibrarySongs Fragment -->
 
 
     <!-- Account Fragment -->
@@ -58,5 +61,8 @@
     </string>
     <string name="title_update_email">Update Email Address</string>
     <string name="title_reset_password">Reset Password</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -7,14 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,17 +20,18 @@ import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.Queue;
-import com.example.musicqueue.ui.queue.QueueHolder;
+import com.example.musicqueue.holders.QueueHolder;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import java.util.Map;
 
 public class FavoritesFragment extends Fragment {
 
@@ -41,16 +39,18 @@ public class FavoritesFragment extends Fragment {
 
     private FavoritesViewModel favoritesViewModel;
 
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
     private FirestoreRecyclerAdapter<Queue, QueueHolder> adapter;
 
     private LinearLayoutManager linearLayoutManager;
 
+    private View root;
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         favoritesViewModel = ViewModelProviders.of(this).get(FavoritesViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_favorites, container, false);
+        root = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         setColors();
 
@@ -66,7 +66,8 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void setUpAdapter() {
-        Query baseQuery = queueCollection.whereEqualTo("favorite", true);
+        final String uid = FirebaseAuth.getInstance().getUid().toString();
+        Query baseQuery = queueCollection.whereEqualTo("favorites." + uid, true);
 
         FirestoreRecyclerOptions<Queue> options =
                 new FirestoreRecyclerOptions.Builder<Queue>()
@@ -81,7 +82,7 @@ public class FavoritesFragment extends Fragment {
                                         snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        (boolean) snapshot.get("favorite"));
+                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"));
                             }
                         }).build();
 
@@ -92,9 +93,18 @@ public class FavoritesFragment extends Fragment {
                 holder.setName(model.getName());
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
-                holder.setFavorite(false);
                 holder.initCardClickListener(model.getDocId());
-                holder.setFavorite(model.getFavorite());
+
+                Map<String, Boolean> favMap = model.getFavoritesMap();
+                holder.setFavoritesMap(favMap);
+
+                if (favMap.containsKey(uid)) {
+                    holder.setFavorite(favMap.get(uid));
+                }
+                else {
+                    holder.setFavorite(false);
+                }
+
             }
 
             @NonNull

@@ -1,11 +1,13 @@
 package com.example.musicqueue.ui.songs;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,15 +17,22 @@ import android.view.ViewGroup;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
+import com.example.musicqueue.holders.SongsHolder;
+import com.example.musicqueue.models.Song;
+import com.example.musicqueue.utilities.CommonUtils;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import java.util.Map;
 
 public class SongsActivity extends AppCompatActivity {
 
@@ -33,14 +42,8 @@ public class SongsActivity extends AppCompatActivity {
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference songsCollection;
-    private FirestoreRecyclerAdapter<SongsModel, SongsHolder> adapter;
+    private FirestoreRecyclerAdapter<Song, SongsHolder> adapter;
 
-    private LinearLayoutManager linearLayoutManager;
-
-    /**
-     * TODO: this is the docid for the queue that the songs are under, use this to update
-     * TODO: the sountCount in the queue so that we properly track the amount of songs
-     */
     String queueDocid;
     String queueName;
     String soungCount;
@@ -59,7 +62,7 @@ public class SongsActivity extends AppCompatActivity {
             .collection(Constants.FIRESTORE_SONG_COLLECTION);
 
         mRecycler = findViewById(R.id.song_recycler);
-        linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         mRecycler.setLayoutManager(linearLayoutManager);
 
         setUpAdapter();
@@ -86,46 +89,115 @@ public class SongsActivity extends AppCompatActivity {
     }
 
     private void setUpAdapter() {
-        Query baseQuery = songsCollection.orderBy("votes", Query.Direction.ASCENDING);
+        Query baseQuery = songsCollection.orderBy("votes", Query.Direction.DESCENDING);
 
-        //TODO Make sure the document names are correct
-        FirestoreRecyclerOptions<SongsModel> options =
-                new FirestoreRecyclerOptions.Builder<SongsModel>()
-                        .setQuery(baseQuery, new SnapshotParser<SongsModel>() {
+        FirestoreRecyclerOptions<Song> options =
+                new FirestoreRecyclerOptions.Builder<Song>()
+                        .setQuery(baseQuery, new SnapshotParser<Song>() {
                             @NonNull
                             @Override
-                            public SongsModel parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                                return new SongsModel(
+                            public Song parseSnapshot(@NonNull DocumentSnapshot snapshot) {
+                                return new Song(
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
                                         FirebaseUtils.getStringOrEmpty(snapshot, "artist"),
                                         FirebaseUtils.getLongOrZero(snapshot,"votes"),
                                         snapshot.getId().toString(),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "queueId"));
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "queueId"),
+                                        FirebaseUtils.getStringOrEmpty(snapshot, "ownerUid"),
+                                        FirebaseUtils.getMapOrInit(snapshot, "voters"));
                             }
                         })
                         .build();
 
-        adapter = new FirestoreRecyclerAdapter<SongsModel, SongsHolder>(options) {
+        adapter = new FirestoreRecyclerAdapter<Song, SongsHolder>(options) {
             @Override
-            protected void onBindViewHolder(@NonNull SongsHolder holder, int position, @NonNull SongsModel model) {
+            protected void onBindViewHolder(@NonNull SongsHolder holder, int position, @NonNull final Song model) {
                 holder.setDocId(model.getDocId());
                 holder.setName(model.getName());
                 holder.setArtist(model.getArtist());
                 holder.setVotes(model.getVotes());
                 holder.setQueueId(model.getQueueId());
+                holder.setOwnerUid(model.getOwnerUid());
+                holder.setVotersMap(model.getVotersMap());
+
+                String uid = FirebaseAuth.getInstance().getUid().toString();
+                String ownerUid = model.getOwnerUid();
+
+                if (uid.equals(ownerUid)) {
+                    holder.ownerTV.setVisibility(View.VISIBLE);
+                    holder.songCV.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+
+                            deleteSongDialog(view, model.getDocId());
+
+                            return true;
+                        }
+                    });
+                }
+
+                Map<String, Boolean> map = model.getVotersMap();
+
+                if (map.containsKey(FirebaseAuth.getInstance().getUid().toString())) {
+                    holder.setVoteArrows(map.get(uid));
+                }
             }
 
             @NonNull
             @Override
             public SongsHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.song_card_layout, parent, false);
-
+                            .inflate(R.layout.song_card_layout, parent, false);
                 return new SongsHolder(view);
             }
         };
 
         mRecycler.setAdapter(adapter);
+    }
+
+    private void deleteSongDialog(final View view, final String docid) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), R.style.AppTheme_AlertDialogTheme);
+        builder.setTitle("Delete Song");
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_delete_song, null);
+        builder.setView(v);
+
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                CollectionReference queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+
+                DocumentReference queueDocRef = queueCollection.document(queueDocid);
+                queueDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Long songCount = FirebaseUtils.getLongOrZero(documentSnapshot, "songCount");
+                        songCount -= 1;
+
+                        updateSongCount(songCount);
+                    }
+                });
+
+                songsCollection.document(docid).delete();
+
+
+                CommonUtils.showToast(getApplicationContext(), "Song deleted");
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void updateSongCount(Long count) {
+        CollectionReference queue = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+        queue.document(queueDocid).update("songCount", count);
     }
 
     @Override

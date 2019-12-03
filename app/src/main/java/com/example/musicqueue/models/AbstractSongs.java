@@ -1,6 +1,8 @@
-package com.example.musicqueue.ui.songs;
+package com.example.musicqueue.models;
 
 import androidx.annotation.Nullable;
+
+import java.util.Map;
 
 public abstract class AbstractSongs {
 
@@ -27,4 +29,13 @@ public abstract class AbstractSongs {
     public abstract String getQueueId();
 
     public abstract void setQueueId(@Nullable String docid);
+
+    @Nullable
+    public abstract String getOwnerUid();
+
+    public abstract void setOwnerUid(@Nullable String ownerUid);
+
+    public abstract Map<String, Boolean> getVotersMap();
+
+    public abstract void setVotersMap(Map<String, Boolean> map);
 }

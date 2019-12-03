@@ -1,6 +1,6 @@
 package com.example.musicqueue;
 
-import com.example.musicqueue.ui.songs.SongsModel;
+import com.example.musicqueue.models.Song;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,11 +9,11 @@ import static org.junit.Assert.assertEquals;
 
 public class SongModelUnitTest {
 
-    private SongsModel songsModel;
+    private Song song;
 
     @Before
     public void setUp() {
-        songsModel = new SongsModel(
+        song = new Song(
                 "DAMN.",
                 "Kendrick Lamar",
                 Integer.toUnsignedLong(128),
@@ -24,35 +24,35 @@ public class SongModelUnitTest {
 
     @Test
     public void testGetName() {
-        assertEquals(songsModel.getName(), "DAMN.");
+        assertEquals(song.getName(), "DAMN.");
     }
 
     @Test
     public void testGetArtist() {
-        assertEquals(songsModel.getArtist(), "Kendrick Lamar");
+        assertEquals(song.getArtist(), "Kendrick Lamar");
     }
 
     @Test
     public void testGetVotes() {
-        assertEquals(songsModel.getVotes(), 128);
+        assertEquals(song.getVotes(), 128);
     }
 
     @Test
     public void testGetDocid() {
-        assertEquals(songsModel.getDocId(), "docid");
+        assertEquals(song.getDocId(), "docid");
     }
 
     @Test
     public void testGetQueueid() {
-        assertEquals(songsModel.getQueueId(), "queueid");
+        assertEquals(song.getQueueId(), "queueid");
     }
 
     @Test
     public void testSetName() {
         String newName = "new name";
 
-        songsModel.setName(newName);
+        song.setName(newName);
 
-        assertEquals(songsModel.getName(), newName);
+        assertEquals(song.getName(), newName);
     }
 }
