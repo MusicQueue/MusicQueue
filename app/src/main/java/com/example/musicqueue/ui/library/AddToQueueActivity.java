@@ -1,31 +1,23 @@
 package com.example.musicqueue.ui.library;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.musicqueue.Constants;
-import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 import com.example.musicqueue.holders.QueueHolder;
 import com.example.musicqueue.models.Queue;
-import com.example.musicqueue.ui.songs.AddSongActivity;
 import com.example.musicqueue.utilities.CommonUtils;
-import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
@@ -98,7 +90,6 @@ public class AddToQueueActivity extends AppCompatActivity {
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
                 holder.setCreator(model.getCreator());
-                //holder.initCardClickListener(model.getDocId());
 
                 holder.favoriteChip.setVisibility(View.GONE);
 

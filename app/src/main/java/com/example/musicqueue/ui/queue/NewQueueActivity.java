@@ -46,17 +46,13 @@ public class NewQueueActivity extends AppCompatActivity {
 
     private final static String TAG = "NewQueueActivity";
 
-    private Button queueCreateButton;
-
     private TextInputLayout queueNameTIL;
     private TextInputEditText queuenameTIET;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
 
-    private PlacesClient placesClient;
     private Place place = null;
-    private double latitude = 0.0, longitude = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +62,7 @@ public class NewQueueActivity extends AppCompatActivity {
         // Initialize the SDK
         Places.initialize(getApplicationContext(), getString(R.string.places_api));
         // Create a new Places client instance
-        placesClient = Places.createClient(this);
+        PlacesClient placesClient = Places.createClient(this);
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
@@ -141,7 +137,7 @@ public class NewQueueActivity extends AppCompatActivity {
         Map<String, Boolean> fav = new HashMap<>();
         fav.put(FirebaseAuth.getInstance().getUid(), true);
 
-        GeoPoint location =  new GeoPoint(latitude, longitude);
+        GeoPoint location = new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
 
         Queue newQueue = new Queue(
                 queuenameTIET.getText().toString(),
