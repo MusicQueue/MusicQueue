@@ -44,10 +44,7 @@ public class QueueFragment extends Fragment {
 
     private static final String TAG = "QueueFragment";
 
-    private QueueViewModel queueViewModel;
-
     RecyclerView recyclerView;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -61,7 +58,7 @@ public class QueueFragment extends Fragment {
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
-        queueViewModel = ViewModelProviders.of(this).get(QueueViewModel.class);
+        QueueViewModel queueViewModel = ViewModelProviders.of(this).get(QueueViewModel.class);
         View root = inflater.inflate(R.layout.fragment_queue, container, false);
 
         setColors();
