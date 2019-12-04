@@ -38,6 +38,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
+import org.imperiumlabs.geofirestore.GeoFirestore;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +55,7 @@ public class NewQueueActivity extends AppCompatActivity {
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
+    private GeoFirestore geoFirestore;
 
     private PlacesClient placesClient;
     private double latitude = 0.0, longitude = 0.0;
@@ -68,6 +71,7 @@ public class NewQueueActivity extends AppCompatActivity {
         placesClient = Places.createClient(this);
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+        geoFirestore = new GeoFirestore(queueCollection);
 
         queueNameTIL = findViewById(R.id.queue_name_text_input_layout);
 
@@ -143,7 +147,7 @@ public class NewQueueActivity extends AppCompatActivity {
         Map<String, Boolean> fav = new HashMap<>();
         fav.put(FirebaseAuth.getInstance().getUid(), true);
 
-        GeoPoint location =  new GeoPoint(latitude, longitude);
+        final GeoPoint location =  new GeoPoint(latitude, longitude);
 
 
         Queue newQueue = new Queue(
@@ -161,6 +165,7 @@ public class NewQueueActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {
+                        geoFirestore.setLocation(task.getResult().getId(), location);
                         CommonUtils.showToast(getApplicationContext(), "Added queue!");
                         task.getResult().collection(Constants.FIRESTORE_QUEUE_COLLECTION);
                         finish();
