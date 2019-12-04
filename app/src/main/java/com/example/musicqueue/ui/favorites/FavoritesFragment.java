@@ -21,7 +21,6 @@ import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 import com.example.musicqueue.models.Queue;
 import com.example.musicqueue.holders.QueueHolder;
-import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
@@ -37,27 +36,21 @@ public class FavoritesFragment extends Fragment {
 
     private static final String TAG = "FavoritesFragment";
 
-    private FavoritesViewModel favoritesViewModel;
-
     private RecyclerView recyclerView;
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
     private FirestoreRecyclerAdapter<Queue, QueueHolder> adapter;
 
-    private LinearLayoutManager linearLayoutManager;
-
-    private View root;
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        favoritesViewModel = ViewModelProviders.of(this).get(FavoritesViewModel.class);
-        root = inflater.inflate(R.layout.fragment_favorites, container, false);
+        FavoritesViewModel favoritesViewModel = ViewModelProviders.of(this).get(FavoritesViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         setColors();
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
         recyclerView = root.findViewById(R.id.favorite_recycler);
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
         setUpAdapter();

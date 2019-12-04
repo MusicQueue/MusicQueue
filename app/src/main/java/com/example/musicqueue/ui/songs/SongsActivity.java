@@ -47,7 +47,7 @@ public class SongsActivity extends AppCompatActivity {
     String queueDocid;
     String queueName;
     String soungCount;
-    String qOwnerId;
+    String queueCreator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class SongsActivity extends AppCompatActivity {
         queueDocid = getIntent().getStringExtra("DOCUMENT_ID");
         queueName = getIntent().getStringExtra("DOCUMENT_NAME");
         soungCount = getIntent().getStringExtra("SONG_COUNT");
-        qOwnerId = getIntent().getStringExtra("OWNER_ID");
+        queueCreator = getIntent().getStringExtra("OWNER_ID");
 
         songsCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
             .document(queueDocid)
@@ -126,7 +126,7 @@ public class SongsActivity extends AppCompatActivity {
                 String ownerUid = model.getOwnerUid();
 
 
-                if (uid.equals(ownerUid) || uid.equals(qOwnerId)) {
+                if (uid.equals(ownerUid) || uid.equals(queueCreator)) {
                     holder.ownerTV.setVisibility(View.VISIBLE);
                     holder.songCV.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
