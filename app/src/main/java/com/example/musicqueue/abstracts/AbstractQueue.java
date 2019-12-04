@@ -9,9 +9,9 @@ public interface AbstractQueue {
 
      void setCreated(Timestamp created);
 
-     String getLocation();
+     GeoPoint getLocation();
 
-     void setLocation(String location);
+     void setLocation(GeoPoint location);
 
      String getDocId();
 
@@ -26,8 +26,4 @@ public interface AbstractQueue {
      void setFavoritesArray(String[] favoritesArray);
 
      String[] getFavoritesArray();
-
-     void setGeoPoint(GeoPoint g);
-
-     GeoPoint getGeoPoint();
 }

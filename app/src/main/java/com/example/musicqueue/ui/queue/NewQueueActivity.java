@@ -51,8 +51,8 @@ public class NewQueueActivity extends AppCompatActivity {
 
     private Button queueCreateButton;
 
-    private TextInputLayout queueNameTIL, locationTIL;
-    private TextInputEditText queuenameTIET, locationTIET;
+    private TextInputLayout queueNameTIL;
+    private TextInputEditText queuenameTIET;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
@@ -73,25 +73,14 @@ public class NewQueueActivity extends AppCompatActivity {
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
         queueNameTIL = findViewById(R.id.queue_name_text_input_layout);
-        locationTIL = findViewById(R.id.location_text_input_layout);
 
         queuenameTIET = findViewById(R.id.queue_name_text_input_edit_text);
-        locationTIET = findViewById(R.id.location_text_input_edit_text);
 
         queuenameTIET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     queuenameTIET.clearFocus();
-                }
-            }
-        });
-
-        locationTIET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    locationTIET.clearFocus();
                 }
             }
         });
@@ -148,10 +137,6 @@ public class NewQueueActivity extends AppCompatActivity {
             queueNameTIL.setError("Reuired");
             return;
         }
-        if (FormUtils.inputIsEmpty(locationTIET.getText().toString())) {
-            locationTIL.setError("Required");
-            return;
-        }
         if (latitude == 0.0 && longitude == 0.0) {
             CommonUtils.showToast(getApplicationContext(), "Adress Required");
             return;
@@ -162,8 +147,7 @@ public class NewQueueActivity extends AppCompatActivity {
 
         Map<String, Object> data = new HashMap<>();
         data.put("name", queuenameTIET.getText().toString());
-        data.put("location", locationTIET.getText().toString());
-        data.put("geoPoint", new GeoPoint(latitude, longitude));
+        data.put("location", new GeoPoint(latitude, longitude));
         data.put("created", Timestamp.now());
         data.put("songCount", Integer.toUnsignedLong(0));
         data.put("favorites", fav);

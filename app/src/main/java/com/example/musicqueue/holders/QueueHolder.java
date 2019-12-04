@@ -26,13 +26,13 @@ import javax.annotation.Nonnull;
 public class QueueHolder extends RecyclerView.ViewHolder {
 
     private String docid;
-    private final TextView queueNameTV, queueLocationTV, songSizeTV;
+    private final TextView queueNameTV, songSizeTV;
     public final Chip favoriteChip;
     public final CardView cardView;
     private long songCount;
 
     private Map<String, Boolean> favoritesMap;
-    private GeoPoint geoPoint;
+    private GeoPoint location;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -42,7 +42,6 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         queueNameTV = itemView.findViewById(R.id.queue_name_text_view);
-        queueLocationTV = itemView.findViewById(R.id.queue_location_text_view);
         songSizeTV = itemView.findViewById(R.id.song_size_text_view);
 
         favoriteChip = itemView.findViewById(R.id.fave_chip);
@@ -56,14 +55,13 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         setLocation(queue.getLocation());
         setSongSize(queue.getSongCount());
         setFavorite(false);
-        setGeoPoint(queue.getGeoPoint());
     }
 
     public void setDocId(@Nonnull String docId) { this.docid = docId; }
 
     public void setName(@Nonnull String name) { this.queueNameTV.setText(name); }
 
-    public void setLocation(@Nonnull String loc) { this.queueLocationTV.setText(loc); }
+    public void setLocation(@Nonnull GeoPoint loc) { this.location = loc; }
 
     public void setSongSize(@Nonnull Long songCount) {
         this.songCount = songCount;
@@ -72,10 +70,6 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public void setFavoritesMap(Map<String, Boolean> favoritesMap) {
         this.favoritesMap = favoritesMap;
-    }
-
-    public void setGeoPoint(GeoPoint g) {
-        this.geoPoint = g;
     }
 
     public void setFavorite(final boolean fave) {
@@ -112,7 +106,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         return this.songCount;
     }
 
-    public GeoPoint getGeoPoint() {
-        return this.geoPoint;
+    public GeoPoint getLocation() {
+        return this.location;
     }
 }

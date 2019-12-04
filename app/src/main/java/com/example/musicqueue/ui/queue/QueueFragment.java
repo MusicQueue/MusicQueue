@@ -97,12 +97,11 @@ public class QueueFragment extends Fragment {
                                 Log.v(TAG, snapshot.toString());
                                 return new Queue(
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "location"),
+                                        snapshot.getGeoPoint("location"),
                                         snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"),
-                                        snapshot.getGeoPoint("geoPoint"));
+                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"));
                             }
                         }).build();
 
@@ -114,7 +113,6 @@ public class QueueFragment extends Fragment {
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
                 holder.initCardClickListener(model.getDocId());
-                holder.setGeoPoint(model.getGeoPoint());
 
                 Map<String, Boolean> favMap = model.getFavoritesMap();
                 holder.setFavoritesMap(favMap);

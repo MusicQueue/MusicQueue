@@ -13,24 +13,22 @@ import java.util.Map;
 public class Queue {
 
     private String name;
-    private String location;
+    private GeoPoint location;
     @DocumentId
     private String docId;
     private Timestamp created;
     private Long songCount;
     private boolean favorite;
     private Map<String, Boolean> favoritesMap;
-    private GeoPoint geoPoint;
 
-    public Queue(String name, String location, String docId, Timestamp created, Long songCount,
-                 Map<String, Boolean> favoritesMap, GeoPoint geoPoint) {
+    public Queue(String name, GeoPoint location, String docId, Timestamp created, Long songCount,
+                 Map<String, Boolean> favoritesMap) {
         this.name = name;
         this.location = location;
         this.docId = docId;
         this.created = created;
         this.songCount = songCount;
         this.favoritesMap = favoritesMap;
-        this.geoPoint = geoPoint;
     }
 
     public Timestamp getCreated() {
@@ -41,11 +39,11 @@ public class Queue {
         this.created = created;
     }
 
-    public String getLocation() {
+    public GeoPoint getLocation() {
         return this.location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(GeoPoint location) {
         this.location = location;
     }
 
@@ -56,8 +54,6 @@ public class Queue {
     public void setDocId(String docId) {
         this.docId = docId;
     }
-
-    public void setLatLng(GeoPoint g) { this.geoPoint = g; }
 
     public String getName() {
         return this.name;
@@ -81,7 +77,4 @@ public class Queue {
         return this.favoritesMap;
     }
 
-    public GeoPoint getGeoPoint() {
-        return this.geoPoint;
-    }
 }
