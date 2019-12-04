@@ -25,8 +25,8 @@ import javax.annotation.Nonnull;
 
 public class QueueHolder extends RecyclerView.ViewHolder {
 
-    private String docid;
-    private final TextView queueNameTV, songSizeTV;
+    private String docid, creator;
+    private final TextView queueNameTV, songSizeTV, songTV;
     public final Chip favoriteChip;
     public final CardView cardView;
     private long songCount;
@@ -43,6 +43,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
         queueNameTV = itemView.findViewById(R.id.queue_name_text_view);
         songSizeTV = itemView.findViewById(R.id.song_size_text_view);
+        songTV = itemView.findViewById(R.id.songs_title_text_view);
 
         favoriteChip = itemView.findViewById(R.id.fave_chip);
 
@@ -55,6 +56,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         setLocation(queue.getLocation());
         setSongSize(queue.getSongCount());
         setFavorite(false);
+        setCreator(queue.getCreator());
     }
 
     public void setDocId(@Nonnull String docId) { this.docid = docId; }
@@ -63,8 +65,18 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public void setLocation(@Nonnull GeoPoint loc) { this.location = loc; }
 
+    public void setCreator(String s) { this.creator = s; }
+
     public void setSongSize(@Nonnull Long songCount) {
         this.songCount = songCount;
+
+        if (songCount == 1) {
+            this.songTV.setText("Song");
+        }
+        else {
+            this.songTV.setText("Songs");
+        }
+
         this.songSizeTV.setText(songCount.toString());
     }
 
@@ -84,13 +96,14 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void initCardClickListener(final String docid) {
+    public void initCardClickListener(final String docid, final String ownerId) {
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Context context = itemView.getContext();
                 Intent intent = new Intent(context, SongsActivity.class);
                 intent.putExtra("DOCUMENT_ID", docid);
+                intent.putExtra("OWNER_ID", ownerId);
                 intent.putExtra("DOCUMENT_NAME", queueNameTV.getText().toString());
                 intent.putExtra("SONG_COUNT", songSizeTV.getText().toString());
                 context.startActivity(intent);
@@ -108,5 +121,9 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public GeoPoint getLocation() {
         return this.location;
+    }
+
+    public String getCreator() {
+        return this.creator;
     }
 }

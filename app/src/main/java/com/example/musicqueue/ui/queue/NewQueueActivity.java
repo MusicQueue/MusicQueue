@@ -55,6 +55,7 @@ public class NewQueueActivity extends AppCompatActivity {
     private CollectionReference queueCollection;
 
     private PlacesClient placesClient;
+    private Place place = null;
     private double latitude = 0.0, longitude = 0.0;
 
     @Override
@@ -88,8 +89,6 @@ public class NewQueueActivity extends AppCompatActivity {
                 createQueue();
 
             }
-
-
         });
 
         initActionbar();
@@ -114,7 +113,7 @@ public class NewQueueActivity extends AppCompatActivity {
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                setLatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                setLatLng(place);
             }
 
             @Override
@@ -125,9 +124,8 @@ public class NewQueueActivity extends AppCompatActivity {
         });
     }
 
-    private void setLatLng(double lat, double lng) {
-        latitude = lat;
-        longitude = lng;
+    private void setLatLng(Place p) {
+        place = p;
     }
 
     public void createQueue() {
@@ -135,7 +133,7 @@ public class NewQueueActivity extends AppCompatActivity {
             queueNameTIL.setError("Reuired");
             return;
         }
-        if (latitude == 0.0 && longitude == 0.0) {
+        if (place == null) {
             CommonUtils.showToast(getApplicationContext(), "Adress Required");
             return;
         }
@@ -145,7 +143,6 @@ public class NewQueueActivity extends AppCompatActivity {
 
         GeoPoint location =  new GeoPoint(latitude, longitude);
 
-
         Queue newQueue = new Queue(
                 queuenameTIET.getText().toString(),
                 location,
@@ -154,8 +151,6 @@ public class NewQueueActivity extends AppCompatActivity {
                 fav,
                 FirebaseAuth.getInstance().getUid()
         );
-
-
 
         queueCollection.add(newQueue)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

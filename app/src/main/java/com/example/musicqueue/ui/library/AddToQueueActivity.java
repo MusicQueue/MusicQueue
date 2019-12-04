@@ -97,6 +97,7 @@ public class AddToQueueActivity extends AppCompatActivity {
                 holder.setName(model.getName());
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
+                holder.setCreator(model.getCreator());
                 //holder.initCardClickListener(model.getDocId());
 
                 holder.favoriteChip.setVisibility(View.GONE);

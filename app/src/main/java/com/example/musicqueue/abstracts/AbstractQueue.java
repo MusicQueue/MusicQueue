@@ -26,4 +26,8 @@ public interface AbstractQueue {
      void setFavoritesArray(String[] favoritesArray);
 
      String[] getFavoritesArray();
+
+     void setCreator(String c);
+
+     String getCreator();
 }

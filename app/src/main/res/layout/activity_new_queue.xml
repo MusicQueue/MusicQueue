@@ -50,7 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="@color/colorSecondary">
+            app:cardBackgroundColor="@color/colorFontLight"
+            app:cardCornerRadius="4dp">
 
             <fragment
                 android:id="@+id/autocomplete_fragment"
