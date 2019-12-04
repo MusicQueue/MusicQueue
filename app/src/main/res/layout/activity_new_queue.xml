@@ -45,20 +45,20 @@
                 android:inputType="textCapWords" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/location_text_input_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp">
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/colorSecondary">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/location_text_input_edit_text"
+            <fragment
+                android:id="@+id/autocomplete_fragment"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Location"
-                android:inputType="textCapWords" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content" />
+
+        </androidx.cardview.widget.CardView>
 
         <Button
             android:id="@+id/queueCreateButton"
@@ -67,4 +67,5 @@
             android:text="Create Queue" />
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

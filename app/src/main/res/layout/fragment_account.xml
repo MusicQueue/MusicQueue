@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/linked_accounts_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                 android:textColor="@color/colorFontLight"
                 android:textSize="18sp"
                 android:background="?attr/selectableItemBackground"
-                android:clickable="true"/>
+                android:clickable="true"/>-->
 
             <View
                 android:id="@+id/divider"

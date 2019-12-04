@@ -1,6 +1,7 @@
-package com.example.musicqueue.models;
+package com.example.musicqueue.abstracts;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.GeoPoint;
 
 public interface AbstractQueue {
 
@@ -8,9 +9,9 @@ public interface AbstractQueue {
 
      void setCreated(Timestamp created);
 
-     String getLocation();
+     GeoPoint getLocation();
 
-     void setLocation(String location);
+     void setLocation(GeoPoint location);
 
      String getDocId();
 

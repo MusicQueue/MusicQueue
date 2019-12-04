@@ -2,8 +2,6 @@ package com.example.musicqueue.holders;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,15 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
-import com.example.musicqueue.models.AbstractQueue;
+import com.example.musicqueue.abstracts.AbstractQueue;
 import com.example.musicqueue.ui.songs.SongsActivity;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -28,11 +26,13 @@ import javax.annotation.Nonnull;
 public class QueueHolder extends RecyclerView.ViewHolder {
 
     private String docid;
-    private final TextView queueNameTV, queueLocationTV, songSizeTV;
-    private final Chip favoriteChip;
-    private final CardView cardView;
+    private final TextView queueNameTV, songSizeTV;
+    public final Chip favoriteChip;
+    public final CardView cardView;
+    private long songCount;
 
-    Map<String, Boolean> favoritesMap;
+    private Map<String, Boolean> favoritesMap;
+    private GeoPoint location;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -42,7 +42,6 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         super(itemView);
 
         queueNameTV = itemView.findViewById(R.id.queue_name_text_view);
-        queueLocationTV = itemView.findViewById(R.id.queue_location_text_view);
         songSizeTV = itemView.findViewById(R.id.song_size_text_view);
 
         favoriteChip = itemView.findViewById(R.id.fave_chip);
@@ -62,9 +61,10 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public void setName(@Nonnull String name) { this.queueNameTV.setText(name); }
 
-    public void setLocation(@Nonnull String loc) { this.queueLocationTV.setText(loc); }
+    public void setLocation(@Nonnull GeoPoint loc) { this.location = loc; }
 
     public void setSongSize(@Nonnull Long songCount) {
+        this.songCount = songCount;
         this.songSizeTV.setText(songCount.toString());
     }
 
@@ -78,7 +78,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 favoriteChip.setChecked(!fave);
-                favoritesMap.put(firebaseUser.getUid().toString(), !fave);
+                favoritesMap.put(firebaseUser.getUid(), !fave);
                 queueCollection.document(docid).update("favorites", favoritesMap);
             }
         });
@@ -96,5 +96,17 @@ public class QueueHolder extends RecyclerView.ViewHolder {
                 context.startActivity(intent);
             }
         });
+    }
+
+    public String getQueueId() {
+        return this.docid;
+    }
+
+    public long getSongCount() {
+        return this.songCount;
+    }
+
+    public GeoPoint getLocation() {
+        return this.location;
     }
 }

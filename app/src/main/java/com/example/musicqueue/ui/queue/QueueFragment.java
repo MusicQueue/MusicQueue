@@ -44,10 +44,7 @@ public class QueueFragment extends Fragment {
 
     private static final String TAG = "QueueFragment";
 
-    private QueueViewModel queueViewModel;
-
     RecyclerView recyclerView;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -61,12 +58,12 @@ public class QueueFragment extends Fragment {
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
-        queueViewModel = ViewModelProviders.of(this).get(QueueViewModel.class);
+        QueueViewModel queueViewModel = ViewModelProviders.of(this).get(QueueViewModel.class);
         View root = inflater.inflate(R.layout.fragment_queue, container, false);
 
         setColors();
 
-        uid = firebaseUser.getUid().toString();
+        uid = firebaseUser.getUid();
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
@@ -97,14 +94,7 @@ public class QueueFragment extends Fragment {
                             @NonNull
                             @Override
                             public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                                Log.v(TAG, snapshot.toString());
-                                return new Queue(
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "name"),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "location"),
-                                        snapshot.getId(),
-                                        FirebaseUtils.getTimestampOrNow(snapshot, "created"),
-                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"));
+                                return snapshot.toObject(Queue.class);
                             }
                         }).build();
 
