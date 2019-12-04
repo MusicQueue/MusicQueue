@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 
 public class QueueHolder extends RecyclerView.ViewHolder {
 
-    private String docid, ownerId;
+    private String docid, creator;
     private final TextView queueNameTV, songSizeTV, songTV;
     public final Chip favoriteChip;
     public final CardView cardView;
@@ -56,6 +56,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         setLocation(queue.getLocation());
         setSongSize(queue.getSongCount());
         setFavorite(false);
+        setCreator(queue.getCreator());
     }
 
     public void setDocId(@Nonnull String docId) { this.docid = docId; }
@@ -64,7 +65,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public void setLocation(@Nonnull GeoPoint loc) { this.location = loc; }
 
-    public void setOwnerId(String s) { this.ownerId = s; }
+    public void setCreator(String s) { this.creator = s; }
 
     public void setSongSize(@Nonnull Long songCount) {
         this.songCount = songCount;
@@ -122,7 +123,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         return this.location;
     }
 
-    public String getOwnerId() {
-        return this.ownerId;
+    public String getCreator() {
+        return this.creator;
     }
 }

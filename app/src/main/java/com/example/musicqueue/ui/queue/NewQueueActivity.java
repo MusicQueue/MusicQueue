@@ -89,8 +89,6 @@ public class NewQueueActivity extends AppCompatActivity {
                 createQueue();
 
             }
-
-
         });
 
         initActionbar();
@@ -145,7 +143,6 @@ public class NewQueueActivity extends AppCompatActivity {
 
         GeoPoint location =  new GeoPoint(latitude, longitude);
 
-
         Queue newQueue = new Queue(
                 queuenameTIET.getText().toString(),
                 location,
@@ -154,8 +151,6 @@ public class NewQueueActivity extends AppCompatActivity {
                 fav,
                 FirebaseAuth.getInstance().getUid()
         );
-
-
 
         queueCollection.add(newQueue)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

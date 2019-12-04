@@ -105,8 +105,8 @@ public class QueueFragment extends Fragment {
                 holder.setName(model.getName());
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
-                holder.initCardClickListener(model.getDocId(), model.getOwnerId());
-                holder.setOwnerId(model.getOwnerId());
+                holder.initCardClickListener(model.getDocId(), model.getCreator());
+                holder.setCreator(model.getCreator());
 
                 Map<String, Boolean> favMap = model.getFavoritesMap();
                 holder.setFavoritesMap(favMap);
