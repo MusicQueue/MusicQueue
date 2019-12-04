@@ -86,15 +86,7 @@ public class AddToQueueActivity extends AppCompatActivity {
                             @NonNull
                             @Override
                             public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                                Log.v(TAG, snapshot.toString());
-                                return new Queue(
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "name"),
-                                        snapshot.getGeoPoint("location"),
-                                        snapshot.getId(),
-                                        FirebaseUtils.getTimestampOrNow(snapshot, "created"),
-                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"),
-                                        snapshot.get("ownerUid").toString());
+                                return snapshot.toObject(Queue.class);
                             }
                         }).build();
 
@@ -164,13 +156,13 @@ public class AddToQueueActivity extends AppCompatActivity {
 
         Map<String, Object> data = new HashMap<>();
         Map<String, Boolean> votersMap = new HashMap<>();
-        votersMap.put(firebaseUser.getUid().toString(), true);
+        votersMap.put(firebaseUser.getUid(), true);
         data.put("voters", votersMap);
         data.put("name", songName);
         data.put("artist", songArtist);
         data.put("votes", Integer.toUnsignedLong(0));
         data.put("queueId", queueId);
-        data.put("ownerUid", firebaseUser.getUid().toString());
+        data.put("ownerUid", firebaseUser.getUid());
 
         songsCollection.add(data)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

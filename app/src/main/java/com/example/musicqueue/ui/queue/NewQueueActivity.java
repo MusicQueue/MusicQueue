@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
@@ -35,7 +33,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -90,6 +87,7 @@ public class NewQueueActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 createQueue();
+
             }
 
 
@@ -143,17 +141,23 @@ public class NewQueueActivity extends AppCompatActivity {
         }
 
         Map<String, Boolean> fav = new HashMap<>();
-        fav.put(FirebaseAuth.getInstance().getUid().toString(), true);
+        fav.put(FirebaseAuth.getInstance().getUid(), true);
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", queuenameTIET.getText().toString());
-        data.put("location", new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude));
-        data.put("created", Timestamp.now());
-        data.put("songCount", Integer.toUnsignedLong(0));
-        data.put("favorites", fav);
-        data.put("ownerUid", FirebaseAuth.getInstance().getUid().toString());
+        GeoPoint location =  new GeoPoint(latitude, longitude);
 
-        queueCollection.add(data)
+
+        Queue newQueue = new Queue(
+                queuenameTIET.getText().toString(),
+                location,
+                Timestamp.now(),
+                Integer.toUnsignedLong(0),
+                fav,
+                FirebaseAuth.getInstance().getUid()
+        );
+
+
+
+        queueCollection.add(newQueue)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {

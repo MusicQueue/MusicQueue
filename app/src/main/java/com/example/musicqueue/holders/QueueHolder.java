@@ -89,7 +89,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View view) {
                 favoriteChip.setChecked(!fave);
-                favoritesMap.put(firebaseUser.getUid().toString(), !fave);
+                favoritesMap.put(firebaseUser.getUid(), !fave);
                 queueCollection.document(docid).update("favorites", favoritesMap);
             }
         });

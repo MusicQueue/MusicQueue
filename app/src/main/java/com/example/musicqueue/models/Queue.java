@@ -5,8 +5,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.IgnoreExtraProperties;
+import com.google.firebase.firestore.PropertyName;
 
-import java.util.List;
 import java.util.Map;
 
 @IgnoreExtraProperties
@@ -22,15 +22,27 @@ public class Queue {
     private boolean favorite;
     private Map<String, Boolean> favoritesMap;
 
-    public Queue(String name, GeoPoint location, String docId, Timestamp created, Long songCount,
-                 Map<String, Boolean> favoritesMap, String ownerId) {
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    private String creator;
+
+    public Queue(){}
+
+    public Queue(String name, GeoPoint location, Timestamp created, Long songCount,
+                 Map<String, Boolean> favoritesMap, String creator) {
         this.name = name;
         this.location = location;
-        this.docId = docId;
         this.created = created;
         this.songCount = songCount;
         this.favoritesMap = favoritesMap;
         this.ownerId = ownerId;
+        this.creator = creator;
     }
 
     public Timestamp getCreated() {
@@ -77,12 +89,23 @@ public class Queue {
 
     public boolean getFavorite() { return this.favorite; }
 
+    @PropertyName("favorites")
     public void setFavoritesMap(Map<String, Boolean> favoritesMap) {
         this.favoritesMap = favoritesMap;
     }
 
+    @PropertyName("favorites")
     public Map<String, Boolean> getFavoritesMap() {
         return this.favoritesMap;
     }
 
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("DocID :").append(this.docId).append("; ");
+        builder.append("Name :").append(this.name).append("; ");
+        builder.append("Location :").append(this.location.toString()).append("; ");
+        builder.append("created :").append(this.created.toString()).append("; ");
+        builder.append("Favorites :").append(this.favoritesMap != null ? this.favoritesMap.toString() : "").append("; ");
+        return builder.toString();
+    }
 }

@@ -63,7 +63,7 @@ public class QueueFragment extends Fragment {
 
         setColors();
 
-        uid = firebaseUser.getUid().toString();
+        uid = firebaseUser.getUid();
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
@@ -94,16 +94,7 @@ public class QueueFragment extends Fragment {
                             @NonNull
                             @Override
                             public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                                Log.v(TAG, snapshot.toString());
-                                return new Queue(
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "name"),
-                                        snapshot.getGeoPoint("location"),
-                                        snapshot.getId(),
-                                        FirebaseUtils.getTimestampOrNow(snapshot, "created"),
-                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"),
-                                        snapshot.get("ownerUi" +
-                                                "d").toString());
+                                return snapshot.toObject(Queue.class);
                             }
                         }).build();
 
