@@ -66,7 +66,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void setUpAdapter() {
-        final String uid = FirebaseAuth.getInstance().getUid().toString();
+        final String uid = FirebaseAuth.getInstance().getUid();
         Query baseQuery = queueCollection.whereEqualTo("favorites." + uid, true);
 
         FirestoreRecyclerOptions<Queue> options =
@@ -76,13 +76,7 @@ public class FavoritesFragment extends Fragment {
                             @Override
                             public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
                                 Log.v(TAG, snapshot.toString());
-                                return new Queue(
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "name"),
-                                        snapshot.getGeoPoint("location"),
-                                        snapshot.getId(),
-                                        FirebaseUtils.getTimestampOrNow(snapshot, "created"),
-                                        FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"));
+                                return snapshot.toObject(Queue.class);
                             }
                         }).build();
 
