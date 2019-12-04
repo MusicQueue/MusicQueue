@@ -83,6 +83,9 @@ public class SongsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * initActionbar initializes the action bar with settings title and a back button
+     */
     private void initActionbar() {
         getSupportActionBar().setElevation(0);  // remove actionbar shadow
         getSupportActionBar().setTitle(queueName);
@@ -90,9 +93,14 @@ public class SongsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
+    /**
+     * pulls all the song ducments from the queue and displays them as cards
+     * in the recycler view
+     */
     private void setUpAdapter() {
         Query baseQuery = songsCollection.orderBy("votes", Query.Direction.DESCENDING);
 
+        // sets each document as a Song Model
         FirestoreRecyclerOptions<Song> options =
                 new FirestoreRecyclerOptions.Builder<Song>()
                         .setQuery(baseQuery, new SnapshotParser<Song>() {
@@ -111,6 +119,7 @@ public class SongsActivity extends AppCompatActivity {
                         })
                         .build();
 
+        // binds each song to a holder
         adapter = new FirestoreRecyclerAdapter<Song, SongsHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull SongsHolder holder, int position, @NonNull final Song model) {
@@ -125,7 +134,7 @@ public class SongsActivity extends AppCompatActivity {
                 String uid = FirebaseAuth.getInstance().getUid().toString();
                 String ownerUid = model.getOwnerUid();
 
-
+                // checks to see if song owner or queue owner so songs can be deleted
                 if (uid.equals(ownerUid) || uid.equals(queueCreator)) {
                     holder.ownerTV.setVisibility(View.VISIBLE);
                     holder.songCV.setOnLongClickListener(new View.OnLongClickListener() {
@@ -139,8 +148,8 @@ public class SongsActivity extends AppCompatActivity {
                     });
                 }
 
+                // TODO: currently does nothing, needs to be fixed
                 Map<String, Boolean> map = model.getVotersMap();
-
                 if (map.containsKey(FirebaseAuth.getInstance().getUid().toString())) {
                     holder.setVoteArrows(map.get(uid));
                 }
@@ -158,6 +167,11 @@ public class SongsActivity extends AppCompatActivity {
         mRecycler.setAdapter(adapter);
     }
 
+    /**
+     * opens the delete song dialog and allows the user to delete the song from the queue
+     * @param view the song card view
+     * @param docid the song doc id
+     */
     private void deleteSongDialog(final View view, final String docid) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), R.style.AppTheme_AlertDialogTheme);
         builder.setTitle("Delete Song");
@@ -198,6 +212,10 @@ public class SongsActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * updates the song count for the queue
+     * @param count the new count
+     */
     private void updateSongCount(Long count) {
         CollectionReference queue = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
         queue.document(queueDocid).update("songCount", count);
