@@ -1,6 +1,7 @@
-package com.example.musicqueue.models;
+package com.example.musicqueue.abstracts;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.GeoPoint;
 
 public interface AbstractQueue {
 
@@ -25,4 +26,8 @@ public interface AbstractQueue {
      void setFavoritesArray(String[] favoritesArray);
 
      String[] getFavoritesArray();
+
+     void setGeoPoint(GeoPoint g);
+
+     GeoPoint getGeoPoint();
 }

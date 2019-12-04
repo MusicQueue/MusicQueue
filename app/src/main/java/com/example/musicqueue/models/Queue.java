@@ -3,6 +3,7 @@ package com.example.musicqueue.models;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentId;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 import java.util.List;
@@ -19,19 +20,21 @@ public class Queue {
     private Long songCount;
     private boolean favorite;
     private Map<String, Boolean> favoritesMap;
+    private GeoPoint geoPoint;
 
     public Queue(String name, String location, String docId, Timestamp created, Long songCount,
-                 Map<String, Boolean> favoritesMap) {
+                 Map<String, Boolean> favoritesMap, GeoPoint geoPoint) {
         this.name = name;
         this.location = location;
         this.docId = docId;
         this.created = created;
         this.songCount = songCount;
         this.favoritesMap = favoritesMap;
+        this.geoPoint = geoPoint;
     }
 
     public Timestamp getCreated() {
-        return created;
+        return this.created;
     }
 
     public void setCreated(Timestamp created) {
@@ -39,7 +42,7 @@ public class Queue {
     }
 
     public String getLocation() {
-        return location;
+        return this.location;
     }
 
     public void setLocation(String location) {
@@ -47,22 +50,24 @@ public class Queue {
     }
 
     public String getDocId() {
-        return docId;
+        return this.docId;
     }
 
     public void setDocId(String docId) {
         this.docId = docId;
     }
 
+    public void setLatLng(GeoPoint g) { this.geoPoint = g; }
+
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public Long getSongCount() { return songCount;}
+    public Long getSongCount() { return this.songCount;}
 
     public void setFavorite(boolean b) { this.favorite = b; }
 
@@ -74,5 +79,9 @@ public class Queue {
 
     public Map<String, Boolean> getFavoritesMap() {
         return this.favoritesMap;
+    }
+
+    public GeoPoint getGeoPoint() {
+        return this.geoPoint;
     }
 }

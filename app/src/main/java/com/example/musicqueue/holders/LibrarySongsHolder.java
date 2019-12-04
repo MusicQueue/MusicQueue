@@ -12,9 +12,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.R;
-import com.example.musicqueue.models.AbstractLibrary;
+import com.example.musicqueue.abstracts.AbstractLibrary;
 import com.example.musicqueue.ui.library.AddToQueueActivity;
-import com.example.musicqueue.ui.songs.SongsActivity;
 
 public class LibrarySongsHolder extends RecyclerView.ViewHolder {
 

@@ -93,7 +93,8 @@ public class AddToQueueActivity extends AppCompatActivity {
                                         snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"));
+                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"),
+                                        snapshot.getGeoPoint("geoPoint"));
                             }
                         }).build();
 
@@ -105,6 +106,7 @@ public class AddToQueueActivity extends AppCompatActivity {
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
                 //holder.initCardClickListener(model.getDocId());
+                holder.setGeoPoint(model.getGeoPoint());
 
                 holder.favoriteChip.setVisibility(View.GONE);
 

@@ -3,6 +3,7 @@ package com.example.musicqueue.ui.queue;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -20,8 +21,16 @@ import com.example.musicqueue.R;
 import com.example.musicqueue.models.Queue;
 import com.example.musicqueue.utilities.CommonUtils;
 import com.example.musicqueue.utilities.FormUtils;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.internal.ui.AutocompleteImplFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
@@ -30,11 +39,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class NewQueueActivity extends AppCompatActivity {
+
+    private final static String TAG = "NewQueueActivity";
 
     private Button queueCreateButton;
 
@@ -44,10 +57,18 @@ public class NewQueueActivity extends AppCompatActivity {
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
 
+    private PlacesClient placesClient;
+    private double latitude = 0.0, longitude = 0.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_queue);
+
+        // Initialize the SDK
+        Places.initialize(getApplicationContext(), getString(R.string.places_api));
+        // Create a new Places client instance
+        placesClient = Places.createClient(this);
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
 
@@ -86,6 +107,40 @@ public class NewQueueActivity extends AppCompatActivity {
 
         initActionbar();
 
+        initAutoComplete();
+
+    }
+
+    private void initAutoComplete() {
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,
+                Place.Field.ADDRESS_COMPONENTS, Place.Field.ADDRESS, Place.Field.LAT_LNG));
+
+        autocompleteFragment.setHint("Add Address");
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                setLatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+    }
+
+    private void setLatLng(double lat, double lng) {
+        latitude = lat;
+        longitude = lng;
     }
 
     public void createQueue() {
@@ -97,6 +152,10 @@ public class NewQueueActivity extends AppCompatActivity {
             locationTIL.setError("Required");
             return;
         }
+        if (latitude == 0.0 && longitude == 0.0) {
+            CommonUtils.showToast(getApplicationContext(), "Adress Required");
+            return;
+        }
 
         Map<String, Boolean> fav = new HashMap<>();
         fav.put(FirebaseAuth.getInstance().getUid().toString(), true);
@@ -104,6 +163,7 @@ public class NewQueueActivity extends AppCompatActivity {
         Map<String, Object> data = new HashMap<>();
         data.put("name", queuenameTIET.getText().toString());
         data.put("location", locationTIET.getText().toString());
+        data.put("geoPoint", new GeoPoint(latitude, longitude));
         data.put("created", Timestamp.now());
         data.put("songCount", Integer.toUnsignedLong(0));
         data.put("favorites", fav);

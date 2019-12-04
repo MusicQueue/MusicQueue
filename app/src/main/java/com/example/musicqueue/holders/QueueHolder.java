@@ -2,8 +2,6 @@ package com.example.musicqueue.holders;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,15 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
-import com.example.musicqueue.models.AbstractQueue;
+import com.example.musicqueue.abstracts.AbstractQueue;
 import com.example.musicqueue.ui.songs.SongsActivity;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -34,6 +32,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
     private long songCount;
 
     private Map<String, Boolean> favoritesMap;
+    private GeoPoint geoPoint;
 
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -57,6 +56,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         setLocation(queue.getLocation());
         setSongSize(queue.getSongCount());
         setFavorite(false);
+        setGeoPoint(queue.getGeoPoint());
     }
 
     public void setDocId(@Nonnull String docId) { this.docid = docId; }
@@ -72,6 +72,10 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public void setFavoritesMap(Map<String, Boolean> favoritesMap) {
         this.favoritesMap = favoritesMap;
+    }
+
+    public void setGeoPoint(GeoPoint g) {
+        this.geoPoint = g;
     }
 
     public void setFavorite(final boolean fave) {
@@ -106,5 +110,9 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     public long getSongCount() {
         return this.songCount;
+    }
+
+    public GeoPoint getGeoPoint() {
+        return this.geoPoint;
     }
 }
