@@ -82,7 +82,8 @@ public class FavoritesFragment extends Fragment {
                                         snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"),
-                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"));
+                                        FirebaseUtils.getMapOrInit(snapshot, "favorites"),
+                                        snapshot.get("ownerUid").toString());
                             }
                         }).build();
 
@@ -93,7 +94,7 @@ public class FavoritesFragment extends Fragment {
                 holder.setName(model.getName());
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
-                holder.initCardClickListener(model.getDocId());
+                holder.initCardClickListener(model.getDocId(), model.getOwnerId());
 
                 Map<String, Boolean> favMap = model.getFavoritesMap();
                 holder.setFavoritesMap(favMap);
