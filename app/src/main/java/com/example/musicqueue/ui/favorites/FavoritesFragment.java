@@ -78,7 +78,7 @@ public class FavoritesFragment extends Fragment {
                                 Log.v(TAG, snapshot.toString());
                                 return new Queue(
                                         FirebaseUtils.getStringOrEmpty(snapshot, "name"),
-                                        FirebaseUtils.getStringOrEmpty(snapshot, "location"),
+                                        snapshot.getGeoPoint("location"),
                                         snapshot.getId(),
                                         FirebaseUtils.getTimestampOrNow(snapshot, "created"),
                                         FirebaseUtils.getLongOrZero(snapshot, "songCount"),

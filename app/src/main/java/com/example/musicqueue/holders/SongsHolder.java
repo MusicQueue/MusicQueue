@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
-import com.example.musicqueue.models.AbstractSongs;
+import com.example.musicqueue.abstracts.AbstractSongs;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;

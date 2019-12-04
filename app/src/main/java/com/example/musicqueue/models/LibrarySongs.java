@@ -2,6 +2,7 @@ package com.example.musicqueue.models;
 
 import androidx.annotation.Nullable;
 
+import com.example.musicqueue.abstracts.AbstractLibrary;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
