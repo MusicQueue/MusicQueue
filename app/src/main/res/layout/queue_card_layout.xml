@@ -36,15 +36,23 @@
                     android:id="@+id/queue_name_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
                     android:text="Queue Name"
                     android:textColor="@color/colorFontLight"
                     android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/queue_owner_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Owner"
+                    android:textColor="@color/colorAccentGreen"
+                    android:visibility="gone" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/fave_chip"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:checkable="true"
                     android:text="Favorite"
                     android:textAlignment="viewStart"

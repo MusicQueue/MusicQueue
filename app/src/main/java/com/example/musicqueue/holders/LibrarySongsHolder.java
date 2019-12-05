@@ -53,6 +53,9 @@ public class LibrarySongsHolder extends RecyclerView.ViewHolder {
 
     public void setDocid(String docid) { this.docid = docid; }
 
+    /**
+     * starts AddToQueueActivity with necessary data
+     */
     private void addToQueue() {
         Context context = itemView.getContext();
         Intent intent = new Intent(context, AddToQueueActivity.class);

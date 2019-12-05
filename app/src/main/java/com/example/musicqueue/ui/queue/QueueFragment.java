@@ -1,39 +1,40 @@
 package com.example.musicqueue.ui.queue;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.musicqueue.Constants;
 import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
-
 import com.example.musicqueue.holders.QueueHolder;
 import com.example.musicqueue.models.Queue;
+import com.example.musicqueue.utilities.CommonUtils;
 import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -106,6 +107,34 @@ public class QueueFragment extends Fragment {
         adapter = new QueueAdapter(listOfIds, uid, testPoint);
 
         recyclerView.setAdapter(adapter);
+    }
+
+    private void openDeleteDialog(final View view, final String queueDocid) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), R.style.AppTheme_AlertDialogTheme);
+        builder.setTitle("Delete Queue");
+
+        final View v = getLayoutInflater().inflate(R.layout.dialog_delete_queue, null);
+        builder.setView(v);
+
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                CollectionReference queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+
+                queueCollection.document(queueDocid).delete();
+
+                CommonUtils.showToast(getContext(), "Queue deleted");
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
     private void setColors() {

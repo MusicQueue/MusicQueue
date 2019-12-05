@@ -48,8 +48,6 @@ public class NewQueueActivity extends AppCompatActivity {
 
     private final static String TAG = "NewQueueActivity";
 
-    private Button queueCreateButton;
-
     private TextInputLayout queueNameTIL;
     private TextInputEditText queuenameTIET;
 
@@ -57,8 +55,7 @@ public class NewQueueActivity extends AppCompatActivity {
     private CollectionReference queueCollection;
     private GeoFirestore geoFirestore;
 
-    private PlacesClient placesClient;
-    private double latitude = 0.0, longitude = 0.0;
+    private Place place = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +65,7 @@ public class NewQueueActivity extends AppCompatActivity {
         // Initialize the SDK
         Places.initialize(getApplicationContext(), getString(R.string.places_api));
         // Create a new Places client instance
-        placesClient = Places.createClient(this);
+        PlacesClient placesClient = Places.createClient(this);
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
         geoFirestore = new GeoFirestore(queueCollection);
@@ -92,8 +89,6 @@ public class NewQueueActivity extends AppCompatActivity {
                 createQueue();
 
             }
-
-
         });
 
         initActionbar();
@@ -118,7 +113,7 @@ public class NewQueueActivity extends AppCompatActivity {
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                setLatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+                setLatLng(place);
             }
 
             @Override
@@ -129,9 +124,8 @@ public class NewQueueActivity extends AppCompatActivity {
         });
     }
 
-    private void setLatLng(double lat, double lng) {
-        latitude = lat;
-        longitude = lng;
+    private void setLatLng(Place p) {
+        place = p;
     }
 
     public void createQueue() {
@@ -139,7 +133,7 @@ public class NewQueueActivity extends AppCompatActivity {
             queueNameTIL.setError("Reuired");
             return;
         }
-        if (latitude == 0.0 && longitude == 0.0) {
+        if (place == null) {
             CommonUtils.showToast(getApplicationContext(), "Adress Required");
             return;
         }
@@ -158,8 +152,6 @@ public class NewQueueActivity extends AppCompatActivity {
                 fav,
                 FirebaseAuth.getInstance().getUid()
         );
-
-
 
         queueCollection.add(newQueue)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {

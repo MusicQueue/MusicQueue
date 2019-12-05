@@ -13,6 +13,7 @@ import java.util.Map;
 public class Queue {
 
     private String name;
+    private String creator;
     private GeoPoint location;
     @DocumentId
     private String docId;
@@ -20,16 +21,6 @@ public class Queue {
     private Long songCount;
     private boolean favorite;
     private Map<String, Boolean> favoritesMap;
-
-    public String getCreator() {
-        return creator;
-    }
-
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
-
-    private String creator;
 
     public Queue(){}
 
@@ -49,6 +40,14 @@ public class Queue {
 
     public void setCreated(Timestamp created) {
         this.created = created;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public GeoPoint getLocation() {

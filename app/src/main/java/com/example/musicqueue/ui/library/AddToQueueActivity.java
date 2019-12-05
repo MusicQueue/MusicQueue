@@ -1,31 +1,23 @@
 package com.example.musicqueue.ui.library;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.musicqueue.Constants;
-import com.example.musicqueue.MainActivity;
 import com.example.musicqueue.R;
 import com.example.musicqueue.holders.QueueHolder;
 import com.example.musicqueue.models.Queue;
-import com.example.musicqueue.ui.songs.AddSongActivity;
 import com.example.musicqueue.utilities.CommonUtils;
-import com.example.musicqueue.utilities.FirebaseUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.SnapshotParser;
@@ -77,9 +69,14 @@ public class AddToQueueActivity extends AppCompatActivity {
         setUpAdapter();
     }
 
+    /**
+     * setUpAdapter pulls the documents from the database so that each one is
+     * display as a card in the recycler view
+     */
     private void setUpAdapter() {
         Query baseQuery = queueCollection;
 
+        // pulls each document as a Queue Model
         FirestoreRecyclerOptions<Queue> options =
                 new FirestoreRecyclerOptions.Builder<Queue>()
                         .setQuery(baseQuery, new SnapshotParser<Queue>() {
@@ -90,6 +87,7 @@ public class AddToQueueActivity extends AppCompatActivity {
                             }
                         }).build();
 
+        // initializes each document ain the holder
         adapter = new FirestoreRecyclerAdapter<Queue, QueueHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull final QueueHolder holder, int position, @NonNull Queue model) {
@@ -97,7 +95,7 @@ public class AddToQueueActivity extends AppCompatActivity {
                 holder.setName(model.getName());
                 holder.setLocation(model.getLocation());
                 holder.setSongSize(model.getSongCount());
-                //holder.initCardClickListener(model.getDocId());
+                holder.setCreator(model.getCreator());
 
                 holder.favoriteChip.setVisibility(View.GONE);
 
@@ -123,6 +121,12 @@ public class AddToQueueActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * checkIfSongInQueue determines whether a song already exists the queue or not
+     *
+     * @param queueId the queue id
+     * @param songCount the queue's song count
+     */
     private void checkIfSongInQueue(final String queueId, final long songCount) {
 
         CollectionReference songsCollection = queueCollection.document(queueId)
@@ -149,6 +153,11 @@ public class AddToQueueActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * addSongToQueue adds the song from the library to the choosen queue
+     * @param queueId the queue id
+     * @param songCount the queue's song count
+     */
     private void addSongToQueue(final String queueId, final long songCount) {
         CollectionReference songsCollection = queueCollection.document(queueId)
                 .collection(Constants.FIRESTORE_SONG_COLLECTION);
@@ -178,6 +187,9 @@ public class AddToQueueActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * displays the song exists dialog
+     */
     private void songExistsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(AddToQueueActivity.this, R.style.AppTheme_AlertDialogTheme);
         builder.setTitle("Song in Queue");
