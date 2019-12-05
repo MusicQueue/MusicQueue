@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,39 +103,9 @@ public class QueueFragment extends Fragment {
     }
 
     private void setUpAdapter(@Nullable List<Queue>listOfIds) {
-
-
         adapter = new QueueAdapter(listOfIds, uid, testPoint);
 
         recyclerView.setAdapter(adapter);
-    }
-
-    private void openDeleteDialog(final View view, final String queueDocid) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), R.style.AppTheme_AlertDialogTheme);
-        builder.setTitle("Delete Queue");
-
-        final View v = getLayoutInflater().inflate(R.layout.dialog_delete_queue, null);
-        builder.setView(v);
-
-        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                CollectionReference queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
-
-                queueCollection.document(queueDocid).delete();
-
-                CommonUtils.showToast(getContext(), "Queue deleted");
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
     }
 
     private void setColors() {
@@ -186,7 +157,6 @@ public class QueueFragment extends Fragment {
             }
         });
     }
-
 
     @Override
     public void onStop() {
