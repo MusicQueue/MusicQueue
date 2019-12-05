@@ -27,6 +27,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
 
     private String docid, creator;
     private final TextView queueNameTV, songSizeTV, songTV;
+    public final TextView ownerTV;
     public final Chip favoriteChip;
     public final CardView cardView;
     private long songCount;
@@ -44,6 +45,7 @@ public class QueueHolder extends RecyclerView.ViewHolder {
         queueNameTV = itemView.findViewById(R.id.queue_name_text_view);
         songSizeTV = itemView.findViewById(R.id.song_size_text_view);
         songTV = itemView.findViewById(R.id.songs_title_text_view);
+        ownerTV = itemView.findViewById(R.id.queue_owner_text_view);
 
         favoriteChip = itemView.findViewById(R.id.fave_chip);
 
