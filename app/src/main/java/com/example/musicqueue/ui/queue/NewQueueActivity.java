@@ -141,8 +141,7 @@ public class NewQueueActivity extends AppCompatActivity {
         Map<String, Boolean> fav = new HashMap<>();
         fav.put(FirebaseAuth.getInstance().getUid(), true);
 
-        final GeoPoint location =  new GeoPoint(latitude, longitude);
-
+        final GeoPoint location =  new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
 
         Queue newQueue = new Queue(
                 queuenameTIET.getText().toString(),
