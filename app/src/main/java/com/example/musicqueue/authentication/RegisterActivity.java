@@ -131,7 +131,9 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             showToast("Registration successful!");
 
-                            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                            firebaseAuth.signInWithEmailAndPassword(email, password);
+
+                            firebaseUser = firebaseAuth.getCurrentUser();
 
                             // create a user profile and update it with the given information
                             UserProfileChangeRequest profile = new UserProfileChangeRequest.Builder()
@@ -140,12 +142,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                             // add the user's display name and email to the database
                             Map<String, String> data = new HashMap<>();
-                            data.put("displayName", firebaseUser.getDisplayName().toString());
+                            data.put("displayName", firebaseUser.getDisplayName());
                             data.put("email", email);
                             db.collection("users").document(firebaseUser.getUid())
                                     .set(data, SetOptions.merge());
 
-                            FirebaseAuth.getInstance().signOut();
+                            firebaseAuth.signOut();
 
                             // navigate the user back to the email/password sign in
                             Intent intent = new Intent(RegisterActivity.this, EmailPasswordActivity.class);
