@@ -58,10 +58,15 @@ public class FavoritesFragment extends Fragment {
         return root;
     }
 
+    /**
+     * setUpAdapter pulls the data from Firebase and initializes each document
+     * as a card that is displayed in the recyvler view
+     */
     private void setUpAdapter() {
         final String uid = FirebaseAuth.getInstance().getUid();
         Query baseQuery = queueCollection.whereEqualTo("favorites." + uid, true);
 
+        // pull each document from the database as a Queue model
         FirestoreRecyclerOptions<Queue> options =
                 new FirestoreRecyclerOptions.Builder<Queue>()
                         .setQuery(baseQuery, new SnapshotParser<Queue>() {
@@ -73,6 +78,7 @@ public class FavoritesFragment extends Fragment {
                             }
                         }).build();
 
+        // initializes the holder with the document data
         adapter = new FirestoreRecyclerAdapter<Queue, QueueHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull QueueHolder holder, int position, @NonNull Queue model) {
@@ -109,6 +115,9 @@ public class FavoritesFragment extends Fragment {
 
     }
 
+    /**
+     * setColors sets the proper colors for the toolbar
+     */
     private void setColors() {
         String PRIMARY_COLOR = "#192125";
         ((AppCompatActivity) getActivity()).getSupportActionBar()

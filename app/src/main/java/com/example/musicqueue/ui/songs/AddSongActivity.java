@@ -111,6 +111,9 @@ public class AddSongActivity extends AppCompatActivity {
         initActionbar();
     }
 
+    /**
+     * addSong checks whether or not the song can be added to the library and the queue
+     */
     public void addSong() {
         if (FormUtils.inputIsEmpty(songNameTIET.getText().toString())) {
             songNameTIL.setError("Reuired");
@@ -143,6 +146,7 @@ public class AddSongActivity extends AppCompatActivity {
             }
         });
 
+        // checks to see if the song already exists in the queue
         songsCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -164,6 +168,9 @@ public class AddSongActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * displays the song exists dialog
+     */
     private void songExistsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(AddSongActivity.this, R.style.AppTheme_AlertDialogTheme);
         builder.setTitle("Song in Queue");
@@ -181,6 +188,11 @@ public class AddSongActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * addSongToQueue adds the song to the queue
+     * @param songName the song name
+     * @param songArtist the song artist
+     */
     private void addSongToQueue(String songName, String songArtist) {
         // [START] add song to queue songs collection
         Map<String, Object> data = new HashMap<>();
@@ -209,6 +221,11 @@ public class AddSongActivity extends AppCompatActivity {
         // [END] add song to queue songs collection
     }
 
+    /**
+     * addToLibrary adds the song to the user's library
+     * @param songName the song name
+     * @param songArtist the song artist
+     */
     private void addToLibrary(String songName, String songArtist) {
         // [START] add song to library collection
         Map<String, Object> libraryData = new HashMap<>();
@@ -221,8 +238,7 @@ public class AddSongActivity extends AppCompatActivity {
     }
 
     /**
-     * initActionbar initializes the action bar with settings title and button back to
-     * Account fragment
+     * initActionbar initializes the action bar with settings title and back button
      */
     private void initActionbar() {
         getSupportActionBar().setElevation(0);  // remove actionbar shadow
