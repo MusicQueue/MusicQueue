@@ -61,8 +61,8 @@ public class QueueFragment extends Fragment {
 
     private GeoFirestore geoFirestore;
     private GeoQuery geoQuery;
-    private List<String> idList;
-    private FirestoreRecyclerAdapter<Queue, QueueHolder> adapter;
+    private List<Queue> idList;
+    private QueueAdapter adapter;
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -86,6 +86,7 @@ public class QueueFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         setUpAdapter(idList);
+        setupGeoquery();
 
         root.findViewById(R.id.new_queue_button).setOnClickListener(new View.OnClickListener() {
            @Override
@@ -99,103 +100,12 @@ public class QueueFragment extends Fragment {
         return root;
     }
 
-    private void setUpAdapter(@Nullable List<String>listOfIds) {
-        Log.v(TAG, idList.toString());
-
-        Query baseQuery = queueCollection;
-
-        if(listOfIds.size() > 0){
-         baseQuery =  queueCollection.whereIn("name", idList);
-        }
-
-        FirestoreRecyclerOptions<Queue> options =
-                new FirestoreRecyclerOptions.Builder<Queue>()
-                        .setQuery(baseQuery, new SnapshotParser<Queue>() {
-                            @NonNull
-                            @Override
-                            public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                                Log.v(TAG, snapshot.getData().toString());
-                                return snapshot.toObject(Queue.class);
-                            }
-                        })
-                        .build();
-
-        adapter = new FirestoreRecyclerAdapter<Queue, QueueHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull QueueHolder holder, int position, @NonNull Queue model) {
-                holder.setDocId(model.getDocId());
-                holder.setName(model.getName());
-                holder.setLocation(model.getLocation());
-                holder.setSongSize(model.getSongCount());
-                holder.initCardClickListener(model.getDocId());
-
-                Map<String, Boolean> favMap = model.getFavoritesMap();
-                holder.setFavoritesMap(favMap);
-
-                if (favMap.containsKey(uid)) {
-                    holder.setFavorite(favMap.get(uid));
-                }
-                else {
-                    holder.setFavorite(false);
-                }
-            }
-
-            @NonNull
-            @Override
-            public QueueHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.queue_card_layout, parent, false);
-
-                return new QueueHolder(view);
-            }
-        };
+    private void setUpAdapter(@Nullable List<Queue>listOfIds) {
 
 
+        adapter = new QueueAdapter(listOfIds, uid, testPoint);
 
         recyclerView.setAdapter(adapter);
-
-        geoQuery = geoFirestore.queryAtLocation(testPoint, 6);
-        geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
-            @Override
-            public void onDocumentEntered(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
-                if(!idList.contains(documentSnapshot.get("name"))) {
-                    idList.add(documentSnapshot.get("name").toString());
-                    setUpAdapter(idList);
-                }
-                Log.v(TAG, idList.toString());
-            }
-
-            @Override
-            public void onDocumentExited(DocumentSnapshot documentSnapshot) {
-                idList.remove(documentSnapshot.get("name").toString());
-                Log.v(TAG, idList.toString());
-                setUpAdapter(idList);
-            }
-
-            @Override
-            public void onDocumentMoved(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
-                Log.v(TAG , idList.toString());
-
-            }
-
-            @Override
-            public void onDocumentChanged(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
-                Log.v(TAG, idList.toString());
-
-            }
-
-            @Override
-            public void onGeoQueryReady() {
-                Log.v(TAG, idList.toString());
-//                setUpAdapter(idList);
-            }
-
-            @Override
-            public void onGeoQueryError(Exception e) {
-                Log.e(TAG, e.toString());
-            }
-        });
-
     }
 
     private void setColors() {
@@ -211,17 +121,47 @@ public class QueueFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        adapter.startListening();
+    private void setupGeoquery(){
+        geoQuery = geoFirestore.queryAtLocation(testPoint, 5);
+        geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
+            @Override
+            public void onDocumentEntered(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
+                idList.add(documentSnapshot.toObject(Queue.class));
+                setUpAdapter(idList);
+                Log.v(TAG, idList.toString());
+            }
+
+            @Override
+            public void onDocumentExited(DocumentSnapshot documentSnapshot) {
+                idList.remove(documentSnapshot.toObject(Queue.class));
+                Log.v(TAG, idList.toString());
+                setUpAdapter(idList);
+            }
+
+            @Override
+            public void onDocumentMoved(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
+            }
+
+            @Override
+            public void onDocumentChanged(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                Log.v(TAG, idList.toString());
+            }
+
+            @Override
+            public void onGeoQueryError(Exception e) {
+                Log.e(TAG, e.toString());
+            }
+        });
     }
+
 
     @Override
     public void onStop() {
-        if (adapter != null) {
-            adapter.stopListening();
-        }
+        geoQuery.removeAllListeners();
         super.onStop();
     }
 
