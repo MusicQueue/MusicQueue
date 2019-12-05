@@ -133,6 +133,9 @@ public class QueueFragment extends Fragment {
                         }
                     });
                 }
+                else {
+                    holder.ownerTV.setVisibility(View.GONE);
+                }
             }
 
             @NonNull
