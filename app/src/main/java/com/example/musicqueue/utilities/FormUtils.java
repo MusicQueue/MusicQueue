@@ -61,6 +61,14 @@ public class FormUtils {
         return result;
     }
 
+    /**
+     * validates the email and password form and sets the appropiate erros if the exist
+     * @param email user's email
+     * @param pass user's passowrd
+     * @param emailTIL email text input layout
+     * @param passTIL password text input layout
+     * @return boolean
+     */
     public static boolean validateEmailPassForm(String email, String pass,
                                                 TextInputLayout emailTIL, TextInputLayout passTIL)
     {

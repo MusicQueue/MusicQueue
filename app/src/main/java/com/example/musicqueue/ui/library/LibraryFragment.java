@@ -70,9 +70,14 @@ public class LibraryFragment extends Fragment {
         return root;
     }
 
+    /**
+     * setupSongsAdapter pulls the data from the database and displays each
+     * document as a card in the recycler view
+     */
     private void setUpSongsAdapter() {
         Query baseQuery = librarySongCollection.orderBy("name", Query.Direction.ASCENDING);
 
+        // sets each document as a LibrarySongs model
         FirestoreRecyclerOptions<LibrarySongs> options =
                 new FirestoreRecyclerOptions.Builder<LibrarySongs>()
                         .setQuery(baseQuery, new SnapshotParser<LibrarySongs>() {
@@ -88,6 +93,7 @@ public class LibraryFragment extends Fragment {
                             }
                         }).build();
 
+        // binds each document to the holder
         songsAdapter = new FirestoreRecyclerAdapter<LibrarySongs, LibrarySongsHolder>(options) {
             @Override
             protected void onBindViewHolder(@NonNull LibrarySongsHolder holder, int position, @NonNull final LibrarySongs model) {
@@ -121,6 +127,12 @@ public class LibraryFragment extends Fragment {
 
     }
 
+    /**
+     * deleteSongDialog creats a dialog that allows the user to delete a song
+     *
+     * @param view view of cong card
+     * @param docid id of the song document
+     */
     private void deleteSongDialog(final View view, final String docid) {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), R.style.AppTheme_AlertDialogTheme);
         builder.setTitle("Delete Song");

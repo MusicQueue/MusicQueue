@@ -62,6 +62,9 @@ public class SongsHolder extends RecyclerView.ViewHolder {
 
     }
 
+    /**
+     * upVoteSong increases the vote count for a song by 1
+     */
     private void upVoteSong() {
         songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
                 .document(queueId)
@@ -73,6 +76,9 @@ public class SongsHolder extends RecyclerView.ViewHolder {
         //songCollection.document(docid).update("voters." + uid, true);
     }
 
+    /**
+     * downVoteSong decreases the vote count for a song by 1
+     */
     private void downVoteSong() {
         songCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION)
                 .document(queueId)
