@@ -2,6 +2,7 @@ package com.example.musicqueue.ui.library;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.example.musicqueue.Constants;
 import com.example.musicqueue.R;
 import com.example.musicqueue.holders.QueueHolder;
 import com.example.musicqueue.models.Queue;
+import com.example.musicqueue.ui.queue.QueueAdapter;
 import com.example.musicqueue.utilities.CommonUtils;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -29,14 +31,23 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.imperiumlabs.geofirestore.GeoFirestore;
+import org.imperiumlabs.geofirestore.GeoQuery;
+import org.imperiumlabs.geofirestore.listeners.GeoQueryDataEventListener;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AddToQueueActivity extends AppCompatActivity {
+    private static final GeoPoint testPoint = new GeoPoint(33.2107754,-87.5547761);
 
     private final static String TAG = "AddToQueueActivity";
 
@@ -46,7 +57,11 @@ public class AddToQueueActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
     private FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     private CollectionReference queueCollection;
-    private FirestoreRecyclerAdapter<Queue, QueueHolder> adapter;
+
+    private GeoFirestore geoFirestore;
+    private GeoQuery geoQuery;
+    private List<Queue> listOfQueues;
+    private QueueAdapter adapter;
 
     private String songName, songArtist;
 
@@ -54,8 +69,10 @@ public class AddToQueueActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_to_queue);
+        listOfQueues = new ArrayList<>();
 
         queueCollection = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
+        geoFirestore = new GeoFirestore(queueCollection);
 
         songName = getIntent().getStringExtra("SONG_NAME");
         songArtist = getIntent().getStringExtra("SONG_ARTIST");
@@ -65,147 +82,20 @@ public class AddToQueueActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         initActionbar();
-
-        setUpAdapter();
+        setupGeoquery();
+        setUpAdapter(listOfQueues);
     }
 
     /**
      * setUpAdapter pulls the documents from the database so that each one is
      * display as a card in the recycler view
      */
-    private void setUpAdapter() {
-        Query baseQuery = queueCollection;
-
-        // pulls each document as a Queue Model
-        FirestoreRecyclerOptions<Queue> options =
-                new FirestoreRecyclerOptions.Builder<Queue>()
-                        .setQuery(baseQuery, new SnapshotParser<Queue>() {
-                            @NonNull
-                            @Override
-                            public Queue parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                                return snapshot.toObject(Queue.class);
-                            }
-                        }).build();
-
-        // initializes each document ain the holder
-        adapter = new FirestoreRecyclerAdapter<Queue, QueueHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull final QueueHolder holder, int position, @NonNull Queue model) {
-                holder.setDocId(model.getDocId());
-                holder.setName(model.getName());
-                holder.setLocation(model.getLocation());
-                holder.setSongSize(model.getSongCount());
-                holder.setCreator(model.getCreator());
-
-                holder.favoriteChip.setVisibility(View.GONE);
-
-                holder.cardView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        checkIfSongInQueue(holder.getQueueId(), holder.getSongCount());
-                    }
-                });
-            }
-
-            @NonNull
-            @Override
-            public QueueHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.queue_card_layout, parent, false);
-
-                return new QueueHolder(view);
-            }
-        };
+    private void setUpAdapter(List<Queue> queueList) {
+        adapter = new AddToQueueAdapter(queueList, FirebaseAuth.getInstance().getUid(), testPoint, songName, songArtist, getApplicationContext());
 
         recyclerView.setAdapter(adapter);
-
     }
 
-    /**
-     * checkIfSongInQueue determines whether a song already exists the queue or not
-     *
-     * @param queueId the queue id
-     * @param songCount the queue's song count
-     */
-    private void checkIfSongInQueue(final String queueId, final long songCount) {
-
-        CollectionReference songsCollection = queueCollection.document(queueId)
-                .collection(Constants.FIRESTORE_SONG_COLLECTION);
-
-        songsCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    boolean exists = false;
-                    for (QueryDocumentSnapshot doc : task.getResult()) {
-                        if (doc.get("name").toString().equals(songName) && doc.get("artist").toString().equals(songArtist)) {
-                            exists = true;
-                        }
-                    }
-                    if (exists) {
-                        songExistsDialog();
-                    }
-                    else {
-                        addSongToQueue(queueId, songCount);
-                    }
-                }
-            }
-        });
-    }
-
-    /**
-     * addSongToQueue adds the song from the library to the choosen queue
-     * @param queueId the queue id
-     * @param songCount the queue's song count
-     */
-    private void addSongToQueue(final String queueId, final long songCount) {
-        CollectionReference songsCollection = queueCollection.document(queueId)
-                .collection(Constants.FIRESTORE_SONG_COLLECTION);
-
-        Map<String, Object> data = new HashMap<>();
-        Map<String, Boolean> votersMap = new HashMap<>();
-        votersMap.put(firebaseUser.getUid(), true);
-        data.put("voters", votersMap);
-        data.put("name", songName);
-        data.put("artist", songArtist);
-        data.put("votes", Integer.toUnsignedLong(0));
-        data.put("queueId", queueId);
-        data.put("ownerUid", firebaseUser.getUid());
-
-        songsCollection.add(data)
-                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        long songCountLong = songCount + 1;
-                        CollectionReference queueref = firestore.collection(Constants.FIRESTORE_QUEUE_COLLECTION);
-                        queueref.document(queueId).update("songCount", songCountLong);
-
-                        CommonUtils.showToast(getApplicationContext(), "Added song!");
-                        task.getResult().collection(Constants.FIRESTORE_SONG_COLLECTION);
-                        finish();
-                    }
-                });
-    }
-
-    /**
-     * displays the song exists dialog
-     */
-    private void songExistsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddToQueueActivity.this, R.style.AppTheme_AlertDialogTheme);
-        builder.setTitle("Song in Queue");
-
-        final View v = getLayoutInflater().inflate(R.layout.dialog_song_exists, null);
-        builder.setView(v);
-
-        builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
 
     /**
      * initActionbar initializes the action bar with settings title and button back to
@@ -221,15 +111,49 @@ public class AddToQueueActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
     }
 
     @Override
     public void onStop() {
-        if (adapter != null) {
-            adapter.stopListening();
-        }
+        geoQuery.removeAllListeners();
         super.onStop();
+    }
+
+
+    private void setupGeoquery(){
+        geoQuery = geoFirestore.queryAtLocation(testPoint, 5);
+        geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
+            @Override
+            public void onDocumentEntered(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
+                listOfQueues.add(documentSnapshot.toObject(Queue.class));
+                setUpAdapter(listOfQueues);
+                Log.v(TAG, listOfQueues.toString());
+            }
+
+            @Override
+            public void onDocumentExited(DocumentSnapshot documentSnapshot) {
+                listOfQueues.remove(documentSnapshot.toObject(Queue.class));
+                Log.v(TAG, listOfQueues.toString());
+                setUpAdapter(listOfQueues);
+            }
+
+            @Override
+            public void onDocumentMoved(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
+            }
+
+            @Override
+            public void onDocumentChanged(DocumentSnapshot documentSnapshot, GeoPoint geoPoint) {
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+            }
+
+            @Override
+            public void onGeoQueryError(Exception e) {
+                Log.e(TAG, e.toString());
+            }
+        });
     }
 
     @Override

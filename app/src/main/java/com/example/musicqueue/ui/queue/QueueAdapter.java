@@ -25,8 +25,8 @@ import java.util.Map;
 
 public class QueueAdapter extends RecyclerView.Adapter<QueueHolder> {
 
-    private List<Queue> queueList;
-    private String uid;
+    protected List<Queue> queueList;
+    protected String uid;
 
     public QueueAdapter(List<Queue> qList, String uid, GeoPoint location){
 
@@ -64,7 +64,7 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueHolder> {
             holder.setFavorite(false);
         }
 
-        final String uid = FirebaseAuth.getInstance().getUid().toString();
+        final String uid = FirebaseAuth.getInstance().getUid();
         final String queueDocid = model.getDocId();
         final String creator = model.getCreator();
 
