@@ -99,4 +99,6 @@ public class Queue {
         builder.append("Favorites :").append(this.favoritesMap != null ? this.favoritesMap.toString() : "").append("; ");
         return builder.toString();
     }
+
+
 }
